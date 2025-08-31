@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>บันทึกข้อความ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap');
+
+    html,
+    body {
+      margin: 0;
+      font-family: 'Sarabun', sans-serif;
+      background-color: #f3f4f6;
+    }
+
+    .page {
+      width: 794px;
+      min-height: 1123px;
+      margin: 40px auto;
+      padding: 60px 70px 50px 100px;
+      background-color: white;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    .memo-line {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .input-box {
+      display: inline-block;
+      border-bottom: 1px solid black;
+      min-width: 200px;
+      padding: 0 0.25rem;
+    }
+
+    .thai-justify.indent-2 {
+      text-indent: 2.5cm;
+    }
+
+
+    .btn-bar {
+      background: white;
+      padding: 2rem 0;
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      width: 794px;
+      margin: auto;
+    }
+
+    /* ย่อหน้าสไตล์ราชการ + ชิดซ้าย/ขวาเท่ากัน */
+    .thai-justify {
+      text-align: justify;
+      /* ชิดซ้าย-ขวา */
+      text-justify: inter-word;
+      /* กระจายคำ (ภาษาไทย) */
+      word-break: break-word;
+      /* ตัดคำเมื่อจำเป็น */
+      line-break: anywhere;
+      /* ให้เบราว์เซอร์ตัดบรรทัดได้เหมาะสม */
+      line-height: 2.2rem;
+      /* ระยะบรรทัด */
+    }
+
+    /* ปุ่มอยู่ต่อท้ายเอกสารในกรอบกระดาษ */
+    .footer-actions {
+      margin-top: 24px;
+      padding-top: 16px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      border-top: 1px solid #e5e7eb;
+      /* เส้นบางๆคั่นกับตัวเนื้อหา */
+
+    }
+  </style>
+</head>
+
+<body>
+  <header class="bg-teal-500 text-white p-4 flex justify-between items-center shadow-md">
+    <div class="flex items-center space-x-3">
+      <div class="w-[56px] h-[56px] flex items-center justify-center relative overflow-visible">
+        <svg xmlns="http://www.w3.org/2000/svg" class="absolute scale-[1.4] text-white"
+          style="width: 60px; height: 60px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m0 0a2 2 0 00-2-2H5a2 2 0 00-2 2m18 0v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8" />
+        </svg>
+      </div>
+      <div class="leading-tight">
+        <div class="text-[16px] font-bold">Smart</div>
+        <div class="text-[16px] font-bold -mt-[2px]">Government</div>
+        <div class="text-[13px] mt-[0px]">Letter Management System</div>
+      </div>
+    </div>
+    <div class="flex items-center space-x-4">
+      <a href="#">
+        <div class="px-4 py-2 rounded-[11px] font-bold transition bg-white text-teal-500 shadow">หน้าหลัก</div>
+      </a>
+      <a href="#">
+        <div class="px-4 py-2 rounded-[11px] font-bold transition text-white">แบบฟอร์มบันทึกข้อความ</div>
+      </a>
+      <div class="bg-white text-teal-500 px-4 py-2 rounded-[11px] shadow flex items-center space-x-2">
+        <div class="text-right leading-tight">
+          <div class="font-bold text-[14px]">ดร.พิทย์พิมล ชูรัตน์</div>
+          <div class="text-[12px]">อาจารย์</div>
+        </div>
+        <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M5.121 17.804A13.937 13.937 0 0112 15c2.33 0 4.487.577 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <!-- ตราครุฑ + หัวเรื่อง -->
+    <div class="flex items-center mb-2">
+      <svg class="h-[56px] w-auto -mt-1" viewBox="0 0 64 64" aria-label="ตราครุฑ" role="img">
+        <title>ตราครุฑ</title>
+        <!-- รูปครุฑแบบสรุป (silhouette) ให้เห็นเป็นตราครุฑชัดเจน และพิมพ์ชัด -->
+        <path fill="currentColor" d="
+      M32 2
+      c-1 3-3 7-6 9c-2 2-6 3-9 4c0 3 3 5 6 6c-5 2-9 5-9 8c0 2 2 4 5 4c1 0 2 0 3-1
+      c-2 2-3 4-3 6c0 2 2 4 5 4c2 0 4-1 6-3v7l-6 8h6l2-4l2 4h6l-6-8v-7c2 2 4 3 6 3
+      c3 0 5-2 5-4c0-2-1-4-3-6c1 1 2 1 3 1c3 0 5-2 5-4c0-3-4-6-9-8c3-1 6-3 6-6
+      c-3-1-7-2-9-4c-3-2-5-6-6-9z
+    " />
+      </svg>
+      <h1 class="text-center font-bold text-xl mx-auto">บันทึกข้อความ</h1>
+    </div>
+
+
+    <!-- ส่วนหัวเอกสาร -->
+    <div class="mb-3 text-[16px]">
+      <div class="flex mb-2">
+        <span class="w-[120px]">ส่วนราชการ</span>
+        <span class="flex-1 border-b border-black pb-[2px]">
+          <span contenteditable="true" class="editable">
+            คณะเทคโนโลยีและการจัดการอุตสาหกรรม ภาควิชาเทคโนโลยีสารสนเทศ โทร. 7064
+          </span>
+        </span>
+      </div>
+
+      <div class="flex mb-2">
+        <span class="w-[120px]">ที่</span>
+        <span class="flex-1 border-b border-black pb-[2px]">
+          <span contenteditable="true" class="editable">ทส. พิเศษ 486/2567</span>
+        </span>
+
+        <span class="ml-8 w-[50px]">วันที่</span>
+        <span class="flex-1 border-b border-black pb-[2px]">
+          <span contenteditable="true" class="editable">6 กรกฎาคม 2568</span>
+        </span>
+      </div>
+
+      <div class="flex mb-2">
+        <span class="w-[120px]">เรื่อง</span>
+        <span class="flex-1 border-b border-black pb-[2px]">
+          <span contenteditable="true" class="editable">เข้ารับการฝึกอบรมหลักสูตร</span>
+        </span>
+      </div>
+
+      <div class="flex mb-2">
+        <span class="w-[120px]">เรียน</span>
+        <span class="flex-1 border-b border-black pb-[2px]">
+          <span contenteditable="true" class="editable">คณบดีคณะเทคโนโลยีและการจัดการอุตสาหกรรม</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- เนื้อหา (ย่อหน้าแรกย่อ 2.5 ซม. + ชิดซ้ายขวาเท่ากัน) -->
+    <div class="thai-justify indent-2 mb-3">
+      ตามที่ สมาคมสหกิจศึกษาไทย กำหนดจัดอบรมหลักสูตร
+      <span contenteditable="true" class="chip">“คณาจารย์นิเทศ CWIE สำหรับผู้ที่ไม่เคยอบรม (ฉบับปรับปรุง พ.ศ. 2566)”
+        รุ่นที่ 1</span>
+      ระหว่างวันที่
+      <span contenteditable="true" class="chip">10 - 11 กรกฎาคม 2568</span>
+      ณ
+      <span contenteditable="true" class="chip">โรงแรม Best Western PLUS ถนนแจ้งวัฒนะ จังหวัดนนทบุรี</span>
+      นั้น ซึ่งหลักสูตรดังกล่าวเป็นประโยชน์ต่อการพัฒนาระบบการจัดการเรียนการสอนในรูปแบบสหกิจศึกษา
+    </div>
+
+    <div class="thai-justify indent-2 mb-3">
+      การนี้ ข้าพเจ้า
+      <span contenteditable="true" class="chip">ดร.พิทย์พิมล ชูรอด ตำแหน่งอาจารย์</span>
+      สังกัดภาควิชาเทคโนโลยีสารสนเทศ คณะเทคโนโลยีและการจัดการอุตสาหกรรม มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ
+      วิทยาเขตปราจีนบุรี จึงมีความประสงค์ที่จะขออนุมัติตัวบุคคลเข้ารับการอบรมหลักสูตร
+      <span contenteditable="true" class="chip">“คณาจารย์นิเทศ CWIE สำหรับผู้ที่ไม่เคยอบรม (ฉบับปรับปรุง พ.ศ.
+        2566)”</span>
+      ระหว่างวันที่
+      <span contenteditable="true" class="chip">10 - 11 กรกฎาคม 2568</span>
+      ณ
+      <span contenteditable="true" class="chip">โรงแรม Best Western PLUS ถนนแจ้งวัฒนะ จังหวัดนนทบุรี</span>
+      วงเงินทั้งสิ้น
+      <span contenteditable="true" class="chip">10,524.00</span> บาท
+      (หนึ่งหมื่นห้าร้อยยี่สิบสี่บาทถ้วน) โดยขอใช้แหล่งเงินจัดสรรให้หน่วยงาน ประจำปีงบประมาณ
+      <span contenteditable="true" class="chip">พ.ศ. 2568</span>
+      ในส่วนของภาควิชาเทคโนโลยีสารสนเทศ แผนงานจัดการศึกษาระดับอุดมศึกษา กองทุนพัฒนาบุคลากร หมวดค่าใช้สอย
+      (รายละเอียดตามเอกสารแนบ)
+    </div>
+
+    <div class="thai-justify indent-2">
+      จึงเรียนมาเพื่อโปรดพิจารณาอนุมัติ และจะได้ดำเนินการต่อไป
+    </div>
+
+    <!-- ผู้เสนอ (ขวา) -->
+    <div class="text-right mt-10 text-[16px]">
+      (อาจารย์ ดร.พิทย์พิมล ชูรอด)<br />
+      อาจารย์ประจำภาควิชาเทคโนโลยีสารสนเทศ
+    </div>
+
+    <!-- เสนอถึง (ซ้าย) -->
+    <div class="mt-10 text-[16px]">
+      เรียน คณบดีคณะเทคโนโลยีและการจัดการอุตสาหกรรม<br />
+      เพื่อโปรดพิจารณาอนุมัติ
+    </div>
+
+    <!-- ผู้เห็นชอบ/หัวหน้าภาค (ซ้าย) -->
+    <div class="mt-12 text-left text-[16px]">
+      (ผู้ช่วยศาสตราจารย์ ดร. ขนิษฐา นามี)<br />
+      หัวหน้าภาควิชาเทคโนโลยีสารสนเทศ
+    </div>
+
+    <!-- ปุ่มต่อท้าย อยู่ "บนกระดาษ" -->
+    <div class="footer-actions">
+      <button class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md">ดูตัวอย่าง</button>
+      <button class="bg-teal-500 hover:bg-teal-600 text-white px-6 py-2 rounded-md">ยืนยัน</button>
+    </div>
+  </main>
+
+
+
+
+</body>
+
+</html>
+
+<style>
+  /* ฟอนต์/กรอบกระดาษยังใช้ของคุณเดิม */
+  .thai-justify {
+    text-align: justify;
+    text-justify: inter-word;
+    word-break: break-word;
+    line-break: anywhere;
+    line-height: 2.2rem;
+  }
+
+  .indent-2 {
+    text-indent: 2.5cm;
+  }
+
+  /* ย่อหน้า 2.5 ซม. ตามราชการ */
+  .editable {
+    outline: none;
+  }
+
+  /* ช่องเส้นใต้แก้ไขได้ */
+  .chip {
+    background: #f3f4f6;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 2px 6px;
+    outline: none;
+  }
+</style>

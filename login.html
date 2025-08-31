@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Login | Smart Government</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-white font-sans">
+
+  <!-- Header -->
+  <header class="bg-teal-500 text-white p-4 flex justify-between items-center shadow-md">
+    <!-- Logo -->
+    <div class="flex items-center space-x-3">
+      <div class="w-[56px] h-[56px] flex items-center justify-center relative overflow-visible">
+        <svg xmlns="http://www.w3.org/2000/svg" class="absolute scale-[1.4] text-white"
+          style="width: 60px; height: 60px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m0 0a2 2 0 00-2-2H5a2 2 0 00-2 2m18 0v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8" />
+        </svg>
+      </div>
+      <div class="leading-tight">
+        <div class="text-[16px] font-bold">Smart</div>
+        <div class="text-[16px] font-bold -mt-[2px]">Government</div>
+        <div class="text-[13px] mt-[0px]">Letter Management System</div>
+      </div>
+    </div>
+
+    <!-- Login Button -->
+    <a href="login.html" class="inline-block">
+      <button class="bg-white text-teal-500 px-4 py-2 rounded-[11px] shadow hover:bg-gray-100 font-bold">
+        เข้าสู่ระบบ
+      </button>
+    </a>
+  </header>
+
+  <!-- Breadcrumb -->
+  <div class="p-6">
+    <nav class="text-sm text-gray-700 space-x-1">
+      <span class="font-bold text-gray-900">หน้าแรก</span>
+      <span>›</span>
+      <span class="text-gray-500">หน้าแรก</span>
+      <span>›</span>
+      <a class="text-teal-600 font-semibold">เข้าสู่ระบบ</a>
+    </nav>
+  </div>
+
+  <!-- Login Form -->
+  <div class="flex justify-center mt-8"> <!-- mt-8 ขยับขึ้นจากเดิม -->
+    <div class="w-full max-w-md bg-white border border-gray-200 shadow-lg p-6 rounded-xl">
+
+      <!-- หัวข้อ -->
+      <div class="bg-teal-500 text-white text-center rounded-t-xl py-3 font-bold text-[16px]">
+        กรุณาป้อน ICIT Account และรหัสผ่าน
+      </div>
+
+      <!-- Form -->
+      <form class="bg-white px-4 pt-6 pb-4 rounded-b-xl space-y-4">
+
+        <div>
+          <label class="block text-sm text-teal-500 mb-1">ICIT Account</label>
+          <input type="text" placeholder="ICIT Account"
+            class="w-full px-4 py-2 border-2 border-teal-400 rounded-full focus:outline-none focus:ring-2 focus:ring-teal-500">
+        </div>
+
+        <div>
+          <label class="block text-sm text-teal-500 mb-1">Password</label>
+          <input type="password" placeholder="Password"
+            class="w-full px-4 py-2 border-2 border-teal-400 rounded-full focus:outline-none focus:ring-2 focus:ring-teal-500">
+        </div>
+
+        <div class="pt-2">
+          <button type="submit"
+            class="w-full bg-teal-500 text-white font-bold py-2 rounded-full shadow hover:bg-teal-600">
+            Login
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</body>
+
+</html>
