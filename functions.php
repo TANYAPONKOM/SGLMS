@@ -1,5 +1,5 @@
 <?php
-function check_login(string $username, string $password): array {
+function __connect(string $username, string $password): array {
     $dbHost = 'localhost';
     $dbName = 'government_letter';
     $dbUser = 'root';
