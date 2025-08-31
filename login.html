@@ -9,7 +9,7 @@
 
 <body class="bg-white font-sans">
 
-  
+  <!-- Header -->
   <header class="bg-teal-500 text-white p-4 flex justify-between items-center shadow-md">
     <!-- Logo -->
     <div class="flex items-center space-x-3">
@@ -56,30 +56,58 @@
       </div>
 
       <!-- Form -->
-      <form class="bg-white px-4 pt-6 pb-4 rounded-b-xl space-y-4">
-
-        <div>
-          <label class="block text-sm text-teal-500 mb-1">ICIT Account</label>
-          <input type="text" placeholder="ICIT Account"
-            class="w-full px-4 py-2 border-2 border-teal-400 rounded-full focus:outline-none focus:ring-2 focus:ring-teal-500">
-        </div>
-
-        <div>
-          <label class="block text-sm text-teal-500 mb-1">Password</label>
-          <input type="password" placeholder="Password"
-            class="w-full px-4 py-2 border-2 border-teal-400 rounded-full focus:outline-none focus:ring-2 focus:ring-teal-500">
-        </div>
-
-        <div class="pt-2">
-          <button type="submit"
-            class="w-full bg-teal-500 text-white font-bold py-2 rounded-full shadow hover:bg-teal-600">
-            Login
-          </button>
-        </div>
-      </form>
-    </div>
+<div id="login-alert" class="hidden bg-red-100 text-red-700 px-4 py-2 rounded mt-4 mb-2"></div>
+<form action="callfunction.php" method="POST" class="bg-white px-4 pt-6 pb-4 rounded-b-xl space-y-4">
+  <div>
+    <label class="block text-sm text-teal-500 mb-1">ICIT Account</label>
+    <input type="text" name="username" placeholder="ICIT Account" required
+      class="w-full px-4 py-2 border-2 border-teal-400 rounded-full focus:outline-none focus:ring-2 focus:ring-teal-500">
+       <small id="error-user" class="text-red-500 text-xs mt-1 hidden"></small>
   </div>
 
-</body>
+  <div>
+    <label class="block text-sm text-teal-500 mb-1">Password</label>
+    <input type="password" name="password" placeholder="Password" required
+      class="w-full px-4 py-2 border-2 border-teal-400 rounded-full focus:outline-none focus:ring-2 focus:ring-teal-500">
+       <small id="error-pass" class="text-red-500 text-xs mt-1 hidden"></small>
+  </div>
 
+  <div class="pt-2">
+    <button type="submit"
+      class="w-full bg-teal-500 text-white font-bold py-2 rounded-full shadow hover:bg-teal-600">
+      Login
+    </button>
+  </div>
+</form>
+
+  </div>
+  </div>
+  
+<!-- Modal: Login Failed -->
+<div id="failModal" class="fixed inset-0 z-50 hidden">
+  <!-- backdrop -->
+  <div class="absolute inset-0 bg-black/50"></div>
+
+  <!-- dialog -->
+  <div class="absolute inset-0 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-md">
+      <div class="flex flex-col items-center text-center p-6">
+        <!-- วงกลม ! -->
+        <div class="w-16 h-16 rounded-full border-2 border-amber-300 flex items-center justify-center mb-4">
+          <span class="text-3xl text-amber-400">!</span>
+        </div>
+        <div id="failText" class="text-gray-700 text-lg font-semibold leading-snug">
+          รหัสผ่านหรือชื่อผู้ใช้ไม่ถูกต้อง
+        </div>
+        <button id="failClose"
+          class="mt-6 px-6 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600 focus:outline-none">
+          ปิด
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</body>
 </html>
