@@ -24,7 +24,7 @@ if ($password === '') {
 }
 
 // ตรวจล็อกอิน
-$res = __connect($username, $password);
+$res = login($username, $password);
 
 if (!$res['ok']) {
     if ($res['error'] === 'db') {
