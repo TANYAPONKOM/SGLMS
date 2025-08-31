@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>แบบฟอร์มบันทึกข้อความ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .custom-select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-color: white;
+      border: 2px solid #11C2B9;
+      border-radius: 1rem;
+      padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+      background-image: url('data:image/svg+xml;utf8,<svg fill="%2311C2B9" height="16" viewBox="0 0 20 20" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M5.516 7.548l4.486 4.448 4.486-4.448L15.56 9l-5.558 5.5L4.444 9z"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      background-size: 1rem;
+    }
+    .custom-select:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(17, 194, 185, 0.4);
+    }
+
+    /*html, body {
+      overflow: hidden;
+    }*/
+  </style>
+</head>
+<body class="bg-gray-100 font-sans">
+
+  <!-- Header -->
+  <header class="bg-[#11C2B9] text-white p-4 flex justify-between items-center shadow-md">
+    <div class="flex items-center space-x-3">
+      <div class="w-[56px] h-[56px] flex items-center justify-center relative overflow-visible">
+        <svg xmlns="http://www.w3.org/2000/svg" class="absolute scale-[1.4] text-white"
+          style="width: 60px; height: 60px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m0 0a2 2 0 00-2-2H5a2 2 0 00-2 2m18 0v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8" />
+        </svg>
+      </div>
+      <div class="leading-tight">
+        <div class="text-[16px] font-bold">Smart</div>
+        <div class="text-[16px] font-bold -mt-[2px]">Government</div>
+        <div class="text-[13px] mt-[0px]">Letter Management System</div>
+      </div>
+    </div>
+    <div class="flex items-center space-x-4">
+      <a href="#"><div class="px-4 py-2 rounded-[11px] font-bold transition bg-white text-[#11C2B9] shadow">หน้าหลัก</div></a>
+      <a href="#"><div class="px-4 py-2 rounded-[11px] font-bold transition text-white">แบบฟอร์มบันทึกข้อความ</div></a>
+      <div class="bg-white text-[#11C2B9] px-4 py-2 rounded-[11px] shadow flex items-center space-x-2">
+        <div class="text-right leading-tight">
+          <div class="font-bold text-[14px]">ดร.พิทย์พิมล ชูรอด</div>
+          <div class="text-[12px]">อาจารย์</div>
+        </div>
+        <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M5.121 17.804A13.937 13.937 0 0112 15c2.33 0 4.487.577 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- กล่องเนื้อหา -->
+  <div class="relative w-[900px] mx-auto mt-16 mb-6 bg-white shadow-md rounded-md p-8 h-[800px]">
+    <h1 class="text-center text-xl font-bold mb-6 text-black">แบบฟอร์มบันทึกข้อความ</h1>
+
+<!-- กล่องรายการที่ต้องดำเนินการ -->
+<div class="rounded-[12px] border border-[#11C2B9] bg-white">
+  <!-- เฉพาะแถบหัวข้อไฮไลท์มิ้นท์ -->
+  <div class="bg-[#E3F9F8] rounded-t-[12px] py-3">
+    <h2 class="text-center text-lg font-bold text-gray-800">รายการที่ต้องดำเนินการ</h2>
+  </div>
+
+  <!-- กล่องเนื้อหา -->
+  <div class="space-y-4 p-6">
+
+    <div class="bg-white border border-gray-200 rounded-[12px] p-4 flex justify-between items-center shadow-sm">
+      <div>
+        <div class="font-semibold text-[#11C2B9]">ลำดับที่ 1</div>
+        <div class="text-sm text-gray-700">ขออนุมัติบัญชีบุคคลเข้ารับการอบรม</div>
+      </div>
+  <div class="w-7 h-7 bg-green-500 rounded-full flex items-center justify-center shadow">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+    </svg>
+    </div>
+  </div>
+
+    <!-- 🟦 ลำดับที่ 2 (default) -->
+    <div class="bg-white border border-gray-200 rounded-[12px] p-4 flex justify-between items-center shadow-sm">
+      <div>
+        <div class="font-semibold text-[#11C2B9]">ลำดับที่ 2</div>
+        <div class="text-sm text-gray-700">ขออนุมัติค่าใช้จ่ายในการอบรม</div>
+      </div>
+      <a href="#" class="text-sm text-[#11C2B9] font-medium hover:underline">แก้ไข</a>
+    </div>
+
+    <!-- 🔵 ลำดับที่ 3 (เลือกอยู่ตอนนี้) -->
+    <div class="bg-white border border-gray-200 rounded-[12px] p-4 flex justify-between items-center shadow-sm">
+      <div>
+        <div class="font-semibold text-[#11C2B9]">ลำดับที่ 3</div>
+        <div class="text-sm text-gray-700">ขออนุมัติใช้ข้อมูลส่วนบุคคล</div>
+      </div>
+      <a href="#" class="text-sm text-[#11C2B9] font-medium hover:underline">แก้ไข</a>
+    </div>
+
+    <!-- อื่น ๆ -->
+    <div class="bg-white border border-gray-200 rounded-[12px] p-4 flex justify-between items-center shadow-sm">
+      <div>
+        <div class="font-semibold text-[#11C2B9]">ลำดับที่ 4</div>
+        <div class="text-sm text-gray-700">ประมาณการค่าใช้จ่าย</div>
+      </div>
+      <a href="#" class="text-sm text-[#11C2B9] font-medium hover:underline">แก้ไข</a>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-[12px] p-4 flex justify-between items-center shadow-sm">
+      <div>
+        <div class="font-semibold text-[#11C2B9]">ลำดับที่ 5</div>
+        <div class="text-sm text-gray-700">สรุปค่าใช้จ่าย</div>
+      </div>
+      <a href="#" class="text-sm text-[#11C2B9] font-medium hover:underline">แก้ไข</a>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ปุ่มส่งคำร้อง ปรับขนาดและตำแหน่ง -->
+<!-- ปุ่มส่งคำร้องอยู่ในกล่องกระดาษ -->
+<div class="absolute bottom-6 right-8">
+  <button class="bg-[#11C2B9] hover:bg-[#0fa39c] text-white font-bold w-[130px] h-[35px] rounded-md transition">
+    ส่งคำร้อง
+  </button>
+</div>
+</div>
+
+</body>
+</html>
