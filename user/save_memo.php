@@ -2,30 +2,34 @@
 // user/save_memo.php
 session_start();
 
-/** ==== DEV FLAGS (ปรับได้) ==== */
-$DEV_AUTO_LOGIN = true;  // true = ให้ผ่านแม้ยังไม่ล็อกอิน (ตั้ง user_id=1)
-$DEBUG_ERRORS   = true;  // true = ส่งข้อความ error ออกมาใน response (ห้ามเปิดใน prod)
+/** ==== DEV FLAGS ==== */
+$DEV_AUTO_LOGIN = true;   // เปิดทดสอบ: ผ่านแม้ยังไม่ล็อกอิน (ตั้ง user_id=1)
+$DEBUG_ERRORS   = true;   // ส่งรายละเอียด error (อย่าเปิดในโปรดักชัน)
 
 if ($DEV_AUTO_LOGIN && empty($_SESSION['user_id'])) {
-    $_SESSION['user_id'] = 1; // ไอดีผู้ใช้ทดสอบในตาราง users
+    $_SESSION['user_id'] = 1; // ผู้ใช้ทดสอบ ที่มีอยู่ในตาราง users
 }
 
 require_once __DIR__ . '/../functions.php';
 
-header('Content-Type: application/json; charset=utf-8');
-
 try {
-    // ต้องมี user_id ใน session (ถ้า DEV_AUTO_LOGIN=false จะต้องล็อกอินจริง)
+    // ต้องมี user_id ใน session (ถ้า DEV_AUTO_LOGIN=false ต้องล็อกอินจริง)
     if (empty($_SESSION['user_id'])) {
-        http_response_code(401);
-        echo json_encode(['ok' => false, 'error' => 'unauthorized']);
+        // ถ้าส่งฟอร์มปกติ -> เด้งกลับหน้าเดิมพร้อม error, ถ้า AJAX -> ส่ง JSON
+        $wantsJson = isset($_POST['_ajax']) && $_POST['_ajax'] === '1';
+        if ($wantsJson) {
+            header('Content-Type: application/json; charset=utf-8', true, 401);
+            echo json_encode(['ok' => false, 'error' => 'unauthorized']);
+        } else {
+            header('Location: form_Memo.html?err=unauthorized', true, 302);
+        }
         exit;
     }
     $userId = (int)$_SESSION['user_id'];
 
     /** ===== รับค่า POST ===== */
     $templateId   = (int)($_POST['template_id']   ?? 1);
-    $departmentId = (int)($_POST['department_id'] ?? 1); // ใช้ผูก FK กับ documents.department_id ถ้ามี
+    $departmentId = (int)($_POST['department_id'] ?? 1);
 
     $docDate    = trim($_POST['doc_date']    ?? '');   // YYYY-MM-DD
     $fullname   = trim($_POST['fullname']    ?? '');
@@ -47,11 +51,11 @@ try {
     $carUsed    = isset($_POST['car_used']) ? 1 : 0;
     $carPlate   = trim($_POST['car_plate'] ?? '');
 
-    // ใหม่: เก็บข้อความของคณะ/ภาควิชา ไว้ใน document_values (field_id 10,11)
+    // เก็บข้อความคณะ/ภาควิชา ใน document_values (field_id 10,11)
     $faculty    = trim($_POST['faculty']    ?? '');
     $department = trim($_POST['department'] ?? '');
 
-    /** ===== ตรวจขั้นต่ำฝั่งเซิร์ฟเวอร์ ให้สอดคล้องกับหน้าเว็บ ===== */
+    /** ===== ตรวจฝั่งเซิร์ฟเวอร์ ===== */
     $errors = [];
     if ($docDate === '')                                $errors['doc_date']    = 'required';
     if ($purpose === '')                                $errors['purpose']     = 'required';
@@ -62,9 +66,17 @@ try {
     if (!$noCost && !is_numeric($amountRaw))            $errors['amount']      = 'number';
     if ($carUsed && $carPlate === '')                   $errors['car_plate']   = 'required';
 
+    $wantsJson = (isset($_POST['_ajax']) && $_POST['_ajax'] === '1')
+                 || (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false);
+
     if (!empty($errors)) {
-        http_response_code(422);
-        echo json_encode(['ok' => false, 'errors' => $errors]);
+        if ($wantsJson) {
+            header('Content-Type: application/json; charset=utf-8', true, 422);
+            echo json_encode(['ok' => false, 'errors' => $errors]);
+        } else {
+            // ส่งกลับหน้าเดิม
+            header('Location: form_Memo.html?err=validate', true, 302);
+        }
         exit;
     }
 
@@ -72,7 +84,7 @@ try {
     $pdo = db();
     $pdo->beginTransaction();
 
-    // 1) สร้างเอกสารใน documents
+    // 1) สร้างเอกสาร
     $stmt = $pdo->prepare("
         INSERT INTO documents (template_id, owner_id, department_id, doc_no, doc_date, status, remark)
         VALUES (:template_id, :owner_id, :department_id, NULL, :doc_date, 'submitted', NULL)
@@ -83,34 +95,33 @@ try {
         ':department_id' => $departmentId,
         ':doc_date'      => $docDate,
     ]);
-    $documentId = (int)$pdo->lastInsertId();
+    $documentId = (int)$pdo->lastInsertId();  // PK = documents.document_id
 
-    // 2) เตรียม map ค่าฟอร์ม -> document_values
+    // 2) map ฟิลด์ตาม template_fields.field_id
     $joinType = match ($purpose) {
         'academic' => 'นำเสนอผลงานทางวิชาการ',
         'training' => 'เข้ารับการฝึกอบรมหลักสูตร',
         'meeting'  => 'เข้าร่วมประชุมวิชาการในงาน',
         default    => 'อื่นๆ',
     };
-
     $values = [
-        1  => $docDate,                                              // doc_date
-        2  => $fullname,                                             // owner_name
-        3  => $position,                                             // position
-        4  => $joinType,                                             // join_type
-        5  => $eventTitle,                                           // course_name
-        6  => ($dateOption === 'single') ? $singleDate : $rangeDate, // join_date_range
-        7  => $isOnline ? 'เข้าร่วมรูปแบบออนไลน์' : $place,         // location
-        8  => number_format($amount, 2, '.', ''),                    // total_cost (string)
-        9  => $carUsed ? $carPlate : '',                             // vehicle
-        10 => $faculty,                                              // faculty (text)
-        11 => $department,                                           // department (text)
+        1  => $docDate,
+        2  => $fullname,
+        3  => $position,
+        4  => $joinType,
+        5  => $eventTitle,
+        6  => ($dateOption === 'single') ? $singleDate : $rangeDate,
+        7  => $isOnline ? 'เข้าร่วมรูปแบบออนไลน์' : $place,
+        8  => number_format($amount, 2, '.', ''),
+        9  => $carUsed ? $carPlate : '',
+        10 => $faculty,
+        11 => $department,
     ];
 
-    // ✅ แก้ตรงนี้: ตาราง template_fields ใช้คอลัมน์ field_id (ไม่ใช่ id)
+    // อนุญาตเฉพาะ field_id ที่ template นี้มีจริง
     $q = $pdo->prepare("SELECT field_id FROM template_fields WHERE template_id = :tid");
     $q->execute([':tid' => $templateId]);
-    $allowIds = array_flip($q->fetchAll(PDO::FETCH_COLUMN)); // คีย์คือ field_id ที่มีจริง
+    $allowIds = array_flip($q->fetchAll(PDO::FETCH_COLUMN));
 
     $ins = $pdo->prepare("
         INSERT INTO document_values (document_id, field_id, value_text)
@@ -119,7 +130,7 @@ try {
     ");
 
     foreach ($values as $fieldId => $val) {
-        if (!isset($allowIds[$fieldId])) continue; // ข้าม field ที่ยังไม่ได้ประกาศใน template_fields
+        if (!isset($allowIds[$fieldId])) continue;
         $ins->execute([
             ':document_id' => $documentId,
             ':field_id'    => $fieldId,
@@ -129,14 +140,24 @@ try {
 
     $pdo->commit();
 
-    echo json_encode([
-        'ok' => true,
-        'document_id' => $documentId
-    ]);
+    // ----- สำคัญ: ถ้า submit ฟอร์มปกติ -> เด้งไปหน้าแก้ไข พร้อม id -----
+    if (!$wantsJson) {
+        header('Location: edit_document.php?id=' . $documentId, true, 302);
+        exit;
+    }
+
+    // ถ้าเรียกแบบ AJAX -> ส่ง JSON
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(['ok' => true, 'document_id' => $documentId]);
+
 } catch (Throwable $e) {
     if (isset($pdo) && $pdo->inTransaction()) $pdo->rollBack();
-    http_response_code(500);
-    $res = ['ok' => false, 'error' => 'server'];
-    if ($DEBUG_ERRORS) { $res['message'] = $e->getMessage(); }
-    echo json_encode($res);
+    if ($wantsJson ?? false) {
+        header('Content-Type: application/json; charset=utf-8', true, 500);
+        $res = ['ok' => false, 'error' => 'server'];
+        if ($DEBUG_ERRORS) $res['message'] = $e->getMessage();
+        echo json_encode($res);
+    } else {
+        header('Location: form_Memo.html?err=server', true, 302);
+    }
 }
