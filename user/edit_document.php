@@ -102,286 +102,286 @@ if ($docDate && preg_match('/^\d{4}/', $docDate)) {
   <title>บันทึกข้อความ #<?= h($document['document_id']) ?></title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    @import url("https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap");
+  @import url("https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap");
 
-    html,
+  html,
+  body {
+    margin: 0;
+    background: #f3f4f6;
+  }
+
+  .page {
+    width: 794px;
+    min-height: 1123px;
+    margin: 40px auto;
+    padding: 60px 70px 50px 100px;
+    background: #fff;
+    box-shadow: 0 0 5px rgba(0, 0, 0, .1);
+    position: relative;
+  }
+
+
+  .underlined {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    padding-bottom: 6px;
+    min-height: 28px;
+    box-shadow: inset 0 -1px 0 #000;
+  }
+
+  .underlined .editable {
+    outline: none;
+    display: inline-block;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: .92rem;
+    line-height: 1.25;
+    padding: 0 2px;
+  }
+
+
+  .thai-justify {
+    text-align: justify;
+    text-justify: inter-word;
+    word-break: break-word;
+    line-height: 1.15;
+    /* ✅ เท่ากับ content-block */
+  }
+
+  /* ปกติ */
+  .content-block {
+    font-family: "TH SarabunPSK";
+    font-size: 16pt;
+    line-height: 1.0;
+    margin: 0;
+    text-align: justify;
+    text-justify: inter-word;
+  }
+
+  /* ย่อหน้าใหม่ */
+  .content-block.paragraph {
+    text-indent: 2.5cm;
+    /* ✅ ย่อหน้า */
+    margin-top: 0.5em;
+
+    line-height: 1.3;
+    /* ✅ ระยะห่างระหว่างบรรทัด */
+  }
+
+
+  .chip {
+    display: inline;
+    padding: 0 1px;
+    /* ลด padding ให้เล็กสุด */
+    margin: 0;
+    /* เอาช่องว่างออก */
+    border: 1px solid #000;
+    background: #fff;
+    font-family: "TH SarabunPSK";
+    font-size: 16pt;
+    line-height: 1em;
+
+    white-space: nowrap;
+    /* กันตัดบรรทัดกลางกล่อง */
+    vertical-align: baseline;
+    /* ให้อยู่ระดับเดียวกับข้อความ */
+  }
+
+  /* กาวกันคำ-วลีสั้นๆ หลุดไปอีกบรรทัด */
+  .keep {
+    white-space: nowrap;
+  }
+
+
+  .chip:hover {
+    border-color: #9ca3af;
+  }
+
+  /* บรรทัดปกติ (ไม่ใช่ย่อหน้าใหม่) */
+  .content-block.single {
+    line-height: 1.0;
+    /* ✅ ระยะห่างปกติ */
+  }
+
+
+
+  .footer-actions {
+    margin-top: 24px;
+    padding-top: 16px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  @media print {
+    header {
+      display: none
+    }
+
     body {
-      margin: 0;
-      background: #f3f4f6;
+      background: #fff
     }
 
     .page {
-      width: 794px;
-      min-height: 1123px;
-      margin: 40px auto;
-      padding: 60px 70px 50px 100px;
-      background: #fff;
-      box-shadow: 0 0 5px rgba(0, 0, 0, .1);
-      position: relative;
-    }
-
-
-    .underlined {
-      position: relative;
-      display: flex;
-      align-items: flex-end;
-      padding-bottom: 6px;
-      min-height: 28px;
-      box-shadow: inset 0 -1px 0 #000;
-    }
-
-    .underlined .editable {
-      outline: none;
-      display: inline-block;
-      max-width: 100%;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      font-size: .92rem;
-      line-height: 1.25;
-      padding: 0 2px;
-    }
-
-
-    .thai-justify {
-      text-align: justify;
-      text-justify: inter-word;
-      word-break: break-word;
-      line-height: 1.15;
-      /* ✅ เท่ากับ content-block */
-    }
-
-    /* ปกติ */
-    .content-block {
-      font-family: "TH SarabunPSK";
-      font-size: 16pt;
-      line-height: 1.0;
       margin: 0;
-      text-align: justify;
-      text-justify: inter-word;
+      box-shadow: none
     }
-
-    /* ย่อหน้าใหม่ */
-    .content-block.paragraph {
-      text-indent: 2.5cm;
-      /* ✅ ย่อหน้า */
-      margin-top: 0.5em;
-
-      line-height: 1.3;
-      /* ✅ ระยะห่างระหว่างบรรทัด */
-    }
-
 
     .chip {
-      display: inline;
-      padding: 0 1px;
-      /* ลด padding ให้เล็กสุด */
-      margin: 0;
-      /* เอาช่องว่างออก */
-      border: 1px solid #000;
-      background: #fff;
-      font-family: "TH SarabunPSK";
-      font-size: 16pt;
-      line-height: 1em;
-
-      white-space: nowrap;
-      /* กันตัดบรรทัดกลางกล่อง */
-      vertical-align: baseline;
-      /* ให้อยู่ระดับเดียวกับข้อความ */
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
     }
 
-    /* กาวกันคำ-วลีสั้นๆ หลุดไปอีกบรรทัด */
-    .keep {
-      white-space: nowrap;
-    }
+  }
+
+  .doc-header {
+    font-size: 16px;
+    line-height: 1.8;
+    margin-bottom: 15px;
+  }
+
+  .doc-row {
+    display: flex;
+    align-items: center;
+    /* ให้ label กับเส้น/กล่องอยู่บรรทัดเดียวกัน */
+    line-height: 1.5;
+    margin-bottom: 6px;
+  }
+
+  .doc-label {
+    font-family: "TH SarabunPSK";
+    font-size: 20pt;
+    font-weight: bold;
+    margin-right: 6px;
+    white-space: nowrap;
+  }
+
+  .dot-line {
+    position: relative;
+    flex: 1;
+    min-height: 28px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* เส้นจุดต่อยาวทั้งบรรทัด */
+  .dot-line::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-bottom: 1px dotted #000;
+  }
+
+  .doc-row.agency-row .dot-input.box {
+    margin-left: 0;
+  }
+
+  .dot-input.box {
+    position: relative;
+    z-index: 1;
+    background: #fff;
+    border: 1px solid #444;
+    font-family: "TH SarabunPSK";
+    font-size: 16pt;
+    line-height: 1.0;
+    height: 28px;
+    padding: 0 8px;
+    margin-left: 8px;
+    /* ✅ ขยับกล่องทั่วไปไปทางขวา */
+    box-sizing: border-box;
+  }
+
+  .dot-line {
+    flex: 1;
+    border-bottom: 1px dotted #000;
+    display: flex;
+    align-items: center;
+    height: auto;
+    line-height: 1.0;
+  }
+
+  /* ฟอนต์ */
+  body {
+    font-family: "TH SarabunPSK", sans-serif;
+  }
+
+  /* หัวเรื่องใหญ่ */
+  h1 {
+    font-family: "TH SarabunPSK";
+    font-size: 29pt;
+    /* ขนาดหัวเรื่อง */
+    font-weight: bold;
+    text-align: flex-end;
+    margin-bottom: 1.5em;
+    flex-end line-height: 1.2;
+  }
+
+  .dot-input,
+  .thai-justify,
+  .content-block {
+    font-family: "TH SarabunPSK";
+    font-size: 16pt;
+    line-height: 1.0;
+    /* ✅ Single line spacing */
+  }
 
 
-    .chip:hover {
-      border-color: #9ca3af;
-    }
+  /* input แบบเต็มบรรทัด */
+  .dot-input.box.full {
+    width: 100%;
+    box-sizing: border-box;
+  }
 
-    /* บรรทัดปกติ (ไม่ใช่ย่อหน้าใหม่) */
-    .content-block.single {
-      line-height: 1.0;
-      /* ✅ ระยะห่างปกติ */
-    }
+  .doc-row .dot-line {
+    flex: 1;
+    border-bottom: 1px dotted #000;
+    height: 28px;
+    display: flex;
+    align-items: center;
+  }
 
+  .dot-input {
+    border: 1px solid #444;
+    background: #fff;
+    font-family: "TH SarabunPSK";
+    font-size: 16pt;
+    line-height: 1.0;
+    padding: 0 6px;
+    height: auto;
+  }
 
+  .doc-title {
+    margin-left: -30px;
+  }
 
-    .footer-actions {
-      margin-top: 24px;
-      padding-top: 16px;
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-      border-top: 1px solid #e5e7eb;
-    }
+  /* เลื่อนซ้าย “นิดหน่อย” */
 
-    @media print {
-      header {
-        display: none
-      }
-
-      body {
-        background: #fff
-      }
-
-      .page {
-        margin: 0;
-        box-shadow: none
-      }
-
-      .chip {
-        box-decoration-break: clone;
-        -webkit-box-decoration-break: clone;
-      }
-
-    }
-
-    .doc-header {
-      font-size: 16px;
-      line-height: 1.8;
-      margin-bottom: 15px;
-    }
-
-    .doc-row {
-      display: flex;
-      align-items: center;
-      /* ให้ label กับเส้น/กล่องอยู่บรรทัดเดียวกัน */
-      line-height: 1.5;
-      margin-bottom: 6px;
-    }
-
-    .doc-label {
-      font-family: "TH SarabunPSK";
-      font-size: 20pt;
-      font-weight: bold;
-      margin-right: 6px;
-      white-space: nowrap;
-    }
-
-    .dot-line {
-      position: relative;
-      flex: 1;
-      min-height: 28px;
-      display: flex;
-      align-items: center;
-    }
-
-    /* เส้นจุดต่อยาวทั้งบรรทัด */
-    .dot-line::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      border-bottom: 1px dotted #000;
-    }
-
-    .doc-row.agency-row .dot-input.box {
-      margin-left: 0;
-    }
-
-    .dot-input.box {
-      position: relative;
-      z-index: 1;
-      background: #fff;
-      border: 1px solid #444;
-      font-family: "TH SarabunPSK";
-      font-size: 16pt;
-      line-height: 1.0;
-      height: 28px;
-      padding: 0 8px;
-      margin-left: 8px;
-      /* ✅ ขยับกล่องทั่วไปไปทางขวา */
-      box-sizing: border-box;
-    }
-
-    .dot-line {
-      flex: 1;
-      border-bottom: 1px dotted #000;
-      display: flex;
-      align-items: center;
-      height: auto;
-      line-height: 1.0;
-    }
-
-    /* ฟอนต์ */
-    body {
-      font-family: "TH SarabunPSK", sans-serif;
-    }
-
-    /* หัวเรื่องใหญ่ */
-    h1 {
-      font-family: "TH SarabunPSK";
-      font-size: 29pt;
-      /* ขนาดหัวเรื่อง */
-      font-weight: bold;
-      text-align: flex-end;
-      margin-bottom: 1.5em;
-      flex-end line-height: 1.2;
-    }
-
-    .dot-input,
-    .thai-justify,
-    .content-block {
-      font-family: "TH SarabunPSK";
-      font-size: 16pt;
-      line-height: 1.0;
-      /* ✅ Single line spacing */
-    }
+  .content-block.indent-first {
+    text-indent: 2.5cm;
+    /* ✅ ย่อหน้าไทย */
+    display: block;
+  }
 
 
-    /* input แบบเต็มบรรทัด */
-    .dot-input.box.full {
-      width: 100%;
-      box-sizing: border-box;
-    }
+  @font-face {
+    font-family: 'TH SarabunPSK';
+    src: url('/fonts/THSarabunPSK.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
 
-    .doc-row .dot-line {
-      flex: 1;
-      border-bottom: 1px dotted #000;
-      height: 28px;
-      display: flex;
-      align-items: center;
-    }
-
-    .dot-input {
-      border: 1px solid #444;
-      background: #fff;
-      font-family: "TH SarabunPSK";
-      font-size: 16pt;
-      line-height: 1.0;
-      padding: 0 6px;
-      height: auto;
-    }
-
-    .doc-title {
-      margin-left: -30px;
-    }
-
-    /* เลื่อนซ้าย “นิดหน่อย” */
-
-    .content-block.indent-first {
-      text-indent: 2.5cm;
-      /* ✅ ย่อหน้าไทย */
-      display: block;
-    }
-
-
-    @font-face {
-      font-family: 'TH SarabunPSK';
-      src: url('/fonts/THSarabunPSK.ttf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
-    }
-
-    @font-face {
-      font-family: 'TH SarabunPSK';
-      src: url('/fonts/THSarabunPSK-Bold.ttf') format('truetype');
-      font-weight: bold;
-      font-style: normal;
-    }
+  @font-face {
+    font-family: 'TH SarabunPSK';
+    src: url('/fonts/THSarabunPSK-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+  }
   </style>
 </head>
 
@@ -518,14 +518,20 @@ if ($docDate && preg_match('/^\d{4}/', $docDate)) {
       </div>
 
       <!-- ลายเซ็น -->
-      <div class="text-right mt-10 text-[16px]">
+      <div class="text-right mt-10" style="font-family:'TH SarabunPSK'; font-size:16pt; line-height:1.2;">
         (<?= h($ownerName ?: '') ?>)<br /><?= h($position ?: '') ?>
       </div>
-      <div class="mt-10 text-[16px]">เรียน <?= h($hdr_to) ?><br />เพื่อโปรดพิจารณาอนุมัติ</div>
-      <div class="mt-12 text-left text-[16px]">(ผู้ช่วยศาสตราจารย์ ดร.
-        ................................)<br />หัวหน้าภาควิชา<?= h($department ?: '................') ?></div>
 
-      <div class="footer-actions">
+      <div class="mt-10" style="font-family:'TH SarabunPSK'; font-size:16pt; line-height:1.2;">
+        เรียน <?= h($hdr_to) ?><br />เพื่อโปรดพิจารณาอนุมัติ
+      </div>
+
+      <div class="mt-12 text-left" style="font-family:'TH SarabunPSK'; font-size:16pt; line-height:1.2;">
+        (ผู้ช่วยศาสตราจารย์ ดร. ................................)<br />
+        หัวหน้าภาควิชา<?= h($department ?: '................') ?>
+      </div>
+
+      <div class="footer-actions" style="font-family:'TH SarabunPSK'; font-size:16pt; ">
         <button class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md"
           onclick="window.print()">พิมพ์/ตัวอย่าง</button>
         <a class="bg-teal-500 hover:bg-teal-600 text-white px-6 py-2 rounded-md"
@@ -534,17 +540,17 @@ if ($docDate && preg_match('/^\d{4}/', $docDate)) {
     </main>
 
     <script>
-      // กันขึ้นบรรทัดใหม่เฉพาะหัวเอกสาร/ชิป
-      document.querySelectorAll('.editable[contenteditable], .chip[contenteditable]').forEach(el => {
-        el.addEventListener('keydown', e => {
-          if (e.key === 'Enter') e.preventDefault();
-        });
-        el.addEventListener('paste', e => {
-          e.preventDefault();
-          const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\r?\n/g, ' ');
-          document.execCommand('insertText', false, text);
-        });
+    // กันขึ้นบรรทัดใหม่เฉพาะหัวเอกสาร/ชิป
+    document.querySelectorAll('.editable[contenteditable], .chip[contenteditable]').forEach(el => {
+      el.addEventListener('keydown', e => {
+        if (e.key === 'Enter') e.preventDefault();
       });
+      el.addEventListener('paste', e => {
+        e.preventDefault();
+        const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\r?\n/g, ' ');
+        document.execCommand('insertText', false, text);
+      });
+    });
     </script>
 </body>
 
