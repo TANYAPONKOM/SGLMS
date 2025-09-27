@@ -24,28 +24,22 @@
       font-size:.92rem;
     }
 
-    /* ให้ “หน้าบรรทัด” ของเนื้อหาชิดซ้ายตรงกับหัวข้อหนา และ “ท้ายบรรทัด” ชิดปลายเส้นด้านบน */
-    .content-block{
-      margin-left: 0;       /* เดิมเลื่อนเท่าคอลัมน์หัวข้อ — เอาออก */
-      width: 100%;          /* ให้กว้างเท่าพื้นที่เส้นใต้ด้านบน */
-      box-sizing: border-box;
-    }
+    .content-block{ margin-left: 0; width: 100%; box-sizing: border-box; }
 
-    /* ย่อบรรทัดแรก 2.5 ซม. (ทนกับชิป/การหักบรรทัด) */
     .indent-first::before{
       content:"";
       display:inline-block;
       width:2.5cm;
     }
 
-    /* ชิปหักบรรทัดเป็นกล่องทุกบรรทัด */
+    /* CHIP */
     .chip{
       display:inline;
       padding:0 .5em;
       margin:0 .18em;
       background:#f9fafb;
       border:1px solid #d1d5db;
-      border-radius:10px;
+      border-radius:0;
       line-height:inherit;
       white-space:normal;
       word-break:break-word;
@@ -56,6 +50,10 @@
       cursor:text;
     }
     .chip:hover{ border-color:#9ca3af; }
+
+    /* ให้ "ณ" + โรงแรม อยู่ติดกัน */
+    .na-group{ display:inline-block; white-space:nowrap; }
+    .na{ margin:0 .2em; }
 
     .footer-actions{ margin-top:24px; padding-top:16px; display:flex; justify-content:flex-end; gap:12px; border-top:1px solid #e5e7eb; }
 
@@ -124,14 +122,14 @@
       </div>
     </div>
 
-    <!-- เนื้อหา: หน้าชิดตรงกับหัวข้อ และท้ายชิดปลายเส้น -->
+    <!-- เนื้อหา -->
     <div class="content-block thai-justify indent-first mb-3">
       ตามที่ สมาคมสหกิจศึกษาไทย กำหนดจัดอบรมหลักสูตร
       <span contenteditable="true" class="chip">“คณาจารย์นิเทศ CWIE สำหรับผู้ที่ไม่เคยอบรม (ฉบับปรับปรุง พ.ศ. 2566)” รุ่นที่ 1</span>
       ระหว่างวันที่
       <span contenteditable="true" class="chip">10 - 11 กรกฎาคม 2568</span>
-      ณ
-      <span contenteditable="true" class="chip">โรงแรม Best Western PLUS ถนนแจ้งวัฒนะ จังหวัดนนทบุรี</span>
+      <span class="na-group"><span class="na">ณ</span>
+      <span contenteditable="true" class="chip">โรงแรม Best Western PLUS ถนนแจ้งวัฒนะ จังหวัดนนทบุรี</span></span>
       นั้น ซึ่งหลักสูตรดังกล่าวเป็นประโยชน์ต่อการพัฒนาระบบการจัดการเรียนการสอนในรูปแบบสหกิจศึกษา
     </div>
 
@@ -143,8 +141,8 @@
       <span contenteditable="true" class="chip">“คณาจารย์นิเทศ CWIE สำหรับผู้ที่ไม่เคยอบรม (ฉบับปรับปรุง พ.ศ. 2566)”</span>
       ระหว่างวันที่
       <span contenteditable="true" class="chip">10 - 11 กรกฎาคม 2568</span>
-      ณ
-      <span contenteditable="true" class="chip">โรงแรม Best Western PLUS ถนนแจ้งวัฒนะ จังหวัดนนทบุรี</span>
+      <span class="na-group"><span class="na">ณ</span>
+      <span contenteditable="true" class="chip">โรงแรม Best Western PLUS ถนนแจ้งวัฒนะ จังหวัดนนทบุรี</span></span>
       วงเงินทั้งสิ้น
       <span contenteditable="true" class="chip">10,524.00</span>
       บาท (หนึ่งหมื่นห้าร้อยยี่สิบสี่บาทถ้วน) โดยขอใช้แหล่งเงินจัดสรรให้หน่วยงาน ประจำปีงบประมาณ
@@ -152,25 +150,33 @@
       ในส่วนของภาควิชาเทคโนโลยีสารสนเทศ แผนงานจัดการศึกษาระดับอุดมศึกษา กองทุนพัฒนาบุคลากร หมวดค่าใช้สอย (รายละเอียดตามเอกสารแนบ)
     </div>
 
-    <div class="content-block thai-justify">
-      จึงเรียนมาเพื่อโปรดพิจารณาอนุมัติ และจะได้ดำเนินการต่อไป
+    <!-- ย้ายตรงนี้ให้อยู่กึ่งกลาง -->
+    <div class="text-center mt-8 text-[15px]">
+      จึงเรียนมาเพื่อโปรดพิจารณาอนุมัติ
     </div>
 
     <!-- ลายเซ็น -->
-    <div class="text-right mt-10 text-[16px]">
+    <div class="text-right mt-10 text-[15px]">
       (อาจารย์ ดร.พิทย์พิมล ชูรอด)<br/>อาจารย์ประจำภาควิชาเทคโนโลยีสารสนเทศ
     </div>
-    <div class="mt-10 text-[16px]">เรียน คณบดีคณะเทคโนโลยีและการจัดการอุตสาหกรรม<br/>เพื่อโปรดพิจารณาอนุมัติ</div>
-    <div class="mt-12 text-left text-[16px]">(ผู้ช่วยศาสตราจารย์ ดร. ขนิษฐา นามี)<br/>หัวหน้าภาควิชาเทคโนโลยีสารสนเทศ</div>
+    <div class="mt-10 text-[15px]">
+      เรียน คณบดีคณะเทคโนโลยีและการจัดการอุตสาหกรรม<br/>เพื่อโปรดพิจารณาอนุมัติ
+    </div>
+    <div class="mt-12 text-left text-[15px]">
+      (ผู้ช่วยศาสตราจารย์ ดร. ขนิษฐา นามี)<br/>หัวหน้าภาควิชาเทคโนโลยีสารสนเทศ
+    </div>
 
     <div class="footer-actions">
-      <button class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md" onclick="window.print()">พิมพ์/ตัวอย่าง</button>
-      <button class="bg-teal-500 hover:bg-teal-600 text-white px-6 py-2 rounded-md">ยืนยัน</button>
+      <button class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md">
+        ดูตัวอย่าง
+      </button>
+      <button class="bg-teal-500 hover:bg-teal-600 text-white px-6 py-2 rounded-md">
+        ยืนยัน
+      </button>
     </div>
   </main>
 
   <script>
-    /* กันขึ้นบรรทัดใหม่เฉพาะหัวเอกสาร */
     document.querySelectorAll('.editable[contenteditable]').forEach(el=>{
       el.addEventListener('keydown', e => { if (e.key === 'Enter') e.preventDefault(); });
       el.addEventListener('paste', e => {

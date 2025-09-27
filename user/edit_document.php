@@ -200,8 +200,8 @@ if ($docDate && preg_match('/^\d{4}/',$docDate)) { $thaiYear = ((int)substr($doc
   <header class="bg-teal-500 text-white p-4 flex justify-between items-center shadow-md">
     <div class="flex items-center space-x-3">
       <div class="w-[56px] h-[56px] flex items-center justify-center relative overflow-visible">
-        <svg xmlns="http://www.w3.org/2000/svg" class="absolute scale-[1.4] text-white" style="width:60px;height:60px"
-          fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="absolute scale-[1.4] text-white"
+                    style="width:60px;height:60px" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
             d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m0 0a2 2 0 00-2-2H5a2 2 0 00-2 2m18 0v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8" />
         </svg>
@@ -224,9 +224,10 @@ if ($docDate && preg_match('/^\d{4}/',$docDate)) { $thaiYear = ((int)substr($doc
           <div class="font-bold text-[14px]"><?=h($ownerName ?: 'ผู้ใช้งาน')?></div>
           <div class="text-[12px]"><?=h($position ?: '')?></div>
         </div>
-        <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-            stroke-width="2">
+                <div
+                    class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round"
               d="M5.121 17.804A13.937 13.937 0 0112 15c2.33 0 4.487.577 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
@@ -259,11 +260,13 @@ if ($docDate && preg_match('/^\d{4}/',$docDate)) { $thaiYear = ((int)substr($doc
       </div>
       <div class="flex mb-1.5">
         <span class="w-[96px] font-bold">เรื่อง</span>
-        <span class="flex-1 underlined"><span class="editable" contenteditable="true"><?=h($hdr_subject)?></span></span>
+                <span class="flex-1 underlined"><span class="editable"
+                        contenteditable="true"><?=h($hdr_subject)?></span></span>
       </div>
       <div class="flex">
         <span class="w-[96px]">เรียน</span>
-        <span class="flex-1 underlined"><span class="editable" contenteditable="true"><?=h($hdr_to)?></span></span>
+                <span class="flex-1 underlined"><span class="editable"
+                        contenteditable="true"><?=h($hdr_to)?></span></span>
       </div>
     </div>
 
@@ -312,7 +315,8 @@ if ($docDate && preg_match('/^\d{4}/',$docDate)) { $thaiYear = ((int)substr($doc
     <div class="footer-actions">
       <button class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md"
         onclick="window.print()">พิมพ์/ตัวอย่าง</button>
-      <a class="bg-teal-500 hover:bg-teal-600 text-white px-6 py-2 rounded-md" href="../user/form_Memo.html">ยืนยัน</a>
+            <a class="bg-teal-500 hover:bg-teal-600 text-white px-6 py-2 rounded-md"
+                href="../user/form_Memo.html">ยืนยัน</a>
     </div>
   </main>
 
@@ -324,7 +328,8 @@ if ($docDate && preg_match('/^\d{4}/',$docDate)) { $thaiYear = ((int)substr($doc
     });
     el.addEventListener('paste', e => {
       e.preventDefault();
-      const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\r?\n/g, ' ');
+            const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\r?\n/g,
+                ' ');
       document.execCommand('insertText', false, text);
     });
   });
