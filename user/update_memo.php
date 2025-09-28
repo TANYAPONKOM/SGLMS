@@ -89,29 +89,39 @@ try {
   $pdo->beginTransaction();
 
   // อัปเดตหัวเอกสาร (อย่างน้อยวันที่)
-  $up = $pdo->prepare("UPDATE documents SET doc_date = :doc_date WHERE document_id = :id");
-  $up->execute([':doc_date' => $docDate, ':id' => $documentId]);
-
-  // map value
-  $joinType = match ($purpose) {
+$joinType = match ($purpose) {
     'academic' => 'นำเสนอผลงานทางวิชาการ',
     'training' => 'เข้ารับการฝึกอบรมหลักสูตร',
-    'meeting' => 'เข้าร่วมประชุมวิชาการในงาน',
-    default => 'อื่นๆ',
-  };
+    'meeting'  => 'เข้าร่วมประชุมวิชาการในงาน',
+    default    => 'อื่นๆ',
+};
+$subject = trim($joinType . ' ' . $eventTitle);
+
+// อัปเดตหัวเอกสาร
+$up = $pdo->prepare("
+    UPDATE documents 
+    SET doc_date = :doc_date, subject = :subject, updated_at = NOW() 
+    WHERE document_id = :id
+");
+$up->execute([
+    ':doc_date' => $docDate,
+    ':subject'  => $subject,
+    ':id'       => $documentId
+]);
+
   $values = [
-    1 => $docDate,
-    2 => $fullname,
-    3 => $position,
-    4 => $joinType,
-    5 => $eventTitle,
-    6 => ($dateOption === 'single') ? $singleDate : $rangeDate,
-    7 => $isOnline ? 'เข้าร่วมรูปแบบออนไลน์' : $place,
-    8 => number_format($amount, 2, '.', ''),
-    9 => $carUsed ? $carPlate : '',
-    10 => $faculty,
-    11 => $department,
-  ];
+  1 => $docDate,
+  2 => $fullname,
+  3 => $position,
+  4 => $joinType,
+  5 => $eventTitle,
+  6 => ($dateOption === 'single') ? $singleDate : $rangeDate,
+  7 => $isOnline ? 'เข้าร่วมรูปแบบออนไลน์' : $place,
+  8 => number_format($amount, 2, '.', ''),
+  9 => $carUsed ? $carPlate : '',
+  10 => $faculty,
+  11 => $department,
+];
 
   // อนุญาตเฉพาะ field_id ที่ template นี้มีจริง
   $q = $pdo->prepare("SELECT field_id FROM template_fields WHERE template_id = :tid");
