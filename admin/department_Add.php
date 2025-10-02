@@ -93,7 +93,7 @@ if (isset($_GET['delete_faculty'])) {
         <!-- Form เพิ่มคณะ -->
         <form method="POST" class="p-8 space-y-6 border-b">
             <input type="hidden" name="add_faculty" value="1">
-            <h2 class="text-xl font-bold text-purple-600">➕ เพิ่มคณะ</h2>
+            <h2 class="text-xl font-bold text-purple-600">เพิ่มคณะ</h2>
             <div>
                 <label class="block font-semibold text-gray-700 mb-1">ชื่อคณะ</label>
                 <input type="text" name="faculty_name"
@@ -101,10 +101,10 @@ if (isset($_GET['delete_faculty'])) {
                     placeholder="Faculty Name" required>
             </div>
             <div class="flex justify-end space-x-3">
-                <a href="department_Add.php"
+                <!-- <a href="department_Add.php"
                     class="px-4 py-2 rounded-lg bg-gray-300 text-gray-700 font-semibold hover:bg-gray-400 transition">
                     ยกเลิก
-                </a>
+                </a> -->
                 <button type="submit"
                     class="px-6 py-2 rounded-lg bg-purple-500 text-white font-semibold hover:bg-purple-600 shadow">
                     บันทึก
@@ -115,7 +115,7 @@ if (isset($_GET['delete_faculty'])) {
         <!-- Form เพิ่มภาควิชา -->
         <form method="POST" class="p-8 space-y-6">
             <input type="hidden" name="add_department" value="1">
-            <h2 class="text-xl font-bold text-teal-600">➕ เพิ่มภาควิชา</h2>
+            <h2 class="text-xl font-bold text-teal-600">เพิ่มภาควิชา</h2>
 
             <div>
                 <label class="block font-semibold text-gray-700 mb-1">เลือกคณะ</label>

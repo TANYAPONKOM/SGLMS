@@ -79,3 +79,17 @@ function getActiveUsers() {
                          ORDER BY user_id ASC");
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
+
+function db(): PDO {
+    $dbHost = 'localhost';
+    $dbName = 'government_letter';
+    $dbUser = 'root';
+    $dbPass = '';
+    return new PDO(
+        "mysql:host=$dbHost;dbname=$dbName;charset=utf8mb4",
+        $dbUser,
+        $dbPass,
+        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+    );
+}
