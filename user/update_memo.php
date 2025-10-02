@@ -82,11 +82,22 @@ try {
 
   if (!empty($errors)) {
     // กลับไปหน้า edit พร้อมข้อความง่าย ๆ (จะปรับเป็น querystring/flash ก็ได้)
-    header('Location: /user/edit_document.php?id=' . $documentId . '&err=validate', true, 302);
+    header('Location: edit_document.php?id=' . $documentId . '&err=validate');
+
     exit;
   }
 
   $pdo->beginTransaction();
+
+  // ดึงชื่อภาคและเบอร์โทร
+$q = $pdo->prepare("SELECT department_name, phone FROM departments WHERE department_id = :id LIMIT 1");
+$q->execute([':id' => $departmentId]);
+$row = $q->fetch(PDO::FETCH_ASSOC);
+
+$deptWithPhone = '';
+if ($row) {
+    $deptWithPhone = $row['department_name'] . ' โทร. ' . $row['phone'];
+}
 
   // อัปเดตหัวเอกสาร (อย่างน้อยวันที่)
 $joinType = match ($purpose) {
@@ -95,7 +106,7 @@ $joinType = match ($purpose) {
     'meeting'  => 'เข้าร่วมประชุมวิชาการในงาน',
     default    => 'อื่นๆ',
 };
-$subject = trim($joinType . ' ' . $eventTitle);
+$subject = trim($joinType . $eventTitle);
 
 // อัปเดตหัวเอกสาร
 $up = $pdo->prepare("
@@ -120,7 +131,7 @@ $up->execute([
   8 => number_format($amount, 2, '.', ''),
   9 => $carUsed ? $carPlate : '',
   10 => $faculty,
-  11 => $department,
+  11 => $deptWithPhone,
 ];
 
   // อนุญาตเฉพาะ field_id ที่ template นี้มีจริง
@@ -146,7 +157,7 @@ $up->execute([
   $pdo->commit();
 
   // กลับหน้า edit เดิม
-  header('Location: /user/edit_document.php?id=' . $documentId . '&saved=1', true, 302);
+  header('Location: edit_document.php?id=' . $documentId .  '&saved=1', true, 302);
   exit;
 
 } catch (Throwable $e) {
@@ -155,6 +166,6 @@ $up->execute([
   if ($DEBUG_ERRORS) {
     echo 'server error: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
   } else {
-    header('Location: /user/edit_document.php?id=' . $documentId . '&err=server', true, 302);
+    header('Location: edit_document.php?id=' . $documentId .  '&err=server', true, 302);
   }
 }

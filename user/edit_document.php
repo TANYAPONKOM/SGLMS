@@ -93,6 +93,16 @@ $vehicle = $valueMap[9] ?? '';
 $faculty = $valueMap[10] ?? '';
 $department = $valueMap[11] ?? '';
 
+// map joinType (ข้อความไทย) -> purpose (รหัสที่ backend ต้องการ)
+$purposeCode = 'training'; // ค่าเริ่มต้น
+switch (trim($joinType)) {
+  case 'นำเสนอผลงานทางวิชาการ': $purposeCode = 'academic'; break;
+  case 'เข้าร่วมประชุมวิชาการในงาน': $purposeCode = 'meeting'; break;
+  case 'เข้ารับการฝึกอบรมหลักสูตร': $purposeCode = 'training'; break;
+  default: $purposeCode = 'other'; break;
+}
+
+
 $thaiDocDate = thai_date($docDate);
 $prettyAmount = $amountStr !== '' ? number_format((float) $amountStr, 2) : '';
 
@@ -121,58 +131,204 @@ $len = max(20, $len);
   <title>บันทึกข้อความ #<?= h($document['document_id']) ?></title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    @import url("https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap");
+  @import url("https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap");
 
-    html,
+  html,
+  body {
+    margin: 0;
+    background: #f3f4f6;
+    font-family: "TH SarabunPSK", sans-serif;
+  }
+
+  .page {
+    width: 794px;
+    min-height: 1123px;
+    margin: 40px auto;
+    padding: 60px 70px 50px 100px;
+    background: #fff;
+    box-shadow: 0 0 5px rgba(0, 0, 0, .1);
+    position: relative;
+    border: 2px solid #fff;
+  }
+
+  h1 {
+    font-family: "TH SarabunPSK";
+    font-size: 29pt;
+    font-weight: bold;
+    text-align: center;
+    line-height: 1.2;
+    margin-bottom: 1.5em;
+  }
+
+  .doc-title {
+    margin-left: -30px;
+  }
+
+  .doc-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+    flex-wrap: nowrap;
+  }
+
+  .doc-label {
+    margin-right: 2px;
+  }
+
+  /* ✅ เส้นจุดจริง */
+  .dot-line {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    height: 22px;
+    margin: 0;
+    position: relative;
+  }
+
+  .dot-line::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 2px;
+    height: 2px;
+    background-image: radial-gradient(circle, #000 1px, transparent 1px);
+    background-size: 6px 2px;
+    background-repeat: repeat-x;
+  }
+
+  .dot-input {
+    border: none;
+    background: transparent;
+    font-family: "TH SarabunPSK";
+    font-size: 16pt;
+    line-height: 1.0;
+    padding: 0 1px;
+    margin: 0;
+    min-width: 30px;
+    max-width: 100%;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 1;
+    /* ให้ข้อความอยู่บนเส้น */
+  }
+
+  .dot-input.box {
+    border: 1px solid #000;
+    background: #fff;
+    padding: 0 4px;
+    height: 24px;
+    margin: 0;
+  }
+
+  .dot-input.box.full {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .content-block {
+    font-family: "TH SarabunPSK";
+    font-size: 16pt;
+    line-height: 1.0;
+    margin: 0;
+    text-align: justify;
+    text-justify: inter-word;
+  }
+
+  .content-block.paragraph {
+    text-indent: 2.5cm;
+    margin-top: 0.5em;
+    line-height: 1.3;
+  }
+
+  .content-block.single {
+    line-height: 1.0;
+  }
+
+  .content-block.indent-first {
+    text-indent: 2.5cm;
+    display: block;
+  }
+
+  .indent-block {
+    margin-left: 2.5cm;
+    text-align: left;
+    font-family: 'TH SarabunPSK';
+    font-size: 16pt;
+    line-height: 1.2;
+  }
+
+  .chip {
+    display: inline;
+    padding: 0 1px;
+    margin: 0;
+    border: 1px solid #000;
+    background: #fff;
+    font-family: "TH SarabunPSK";
+    font-size: 16pt;
+    line-height: 1em;
+    white-space: nowrap;
+    vertical-align: baseline;
+  }
+
+  .keep {
+    white-space: nowrap;
+  }
+
+  .signature-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 2em;
+  }
+
+  .signature-block {
+    margin-top: 50px;
+    margin-left: 187px;
+    text-align: center;
+    font-family: 'TH SarabunPSK';
+    font-size: 16pt;
+    line-height: 1.2;
+  }
+
+  .sig-name {
+    display: block;
+    white-space: nowrap;
+  }
+
+  .sig-position {
+    display: block;
+    white-space: nowrap;
+  }
+
+  .footer-actions {
+    margin-top: 24px;
+    padding-top: 16px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  @media print {
+
+    header,
+    .footer-actions {
+      display: none !important;
+    }
+
     body {
-      margin: 0;
-      background: #f3f4f6;
-      font-family: "TH SarabunPSK", sans-serif;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
     }
 
     .page {
-      width: 794px;
-      min-height: 1123px;
-      margin: 40px auto;
-      padding: 60px 70px 50px 100px;
-      background: #fff;
-      box-shadow: 0 0 5px rgba(0, 0, 0, .1);
-      position: relative;
-      border: 2px solid #fff;
-    }
-
-    h1 {
-      font-family: "TH SarabunPSK";
-      font-size: 29pt;
-      font-weight: bold;
-      text-align: center;
-      line-height: 1.2;
-      margin-bottom: 1.5em;
-    }
-
-    .doc-title {
-      margin-left: -30px;
-    }
-
-    .doc-row {
-      display: flex;
-      align-items: center;
-      margin-bottom: 6px;
-      flex-wrap: nowrap;
-    }
-
-    .doc-label {
-      margin-right: 2px;
-    }
-
-    /* ✅ เส้นจุดจริง */
-    .dot-line {
-      flex: 1;
-      display: flex;
-      align-items: flex-end;
-      height: 22px;
       margin: 0;
-      position: relative;
+      box-shadow: none;
+      /* กำหนดขอบแต่ละด้าน: บน 2cm, ขวา 2cm, ล่าง 2cm, ซ้าย 2.5cm */
+      padding: 3cm 2cm 3cm 3cm;
+      width: 21cm;
+      min-height: 29.7cm;
+      border: 2px solid #fff !important;
     }
 
     .dot-line::after {
@@ -182,212 +338,67 @@ $len = max(20, $len);
       right: 0;
       bottom: 2px;
       height: 2px;
-      background-image: radial-gradient(circle, #000 1px, transparent 1px);
-      background-size: 6px 2px;
+      background-image: radial-gradient(circle, #000 0.6px, transparent 0.6px);
+      background-size: 4px 2px;
+
+
       background-repeat: repeat-x;
     }
 
     .dot-input {
-      border: none;
-      background: transparent;
-      font-family: "TH SarabunPSK";
-      font-size: 16pt;
-      line-height: 1.0;
-      padding: 0 1px;
-      margin: 0;
-      min-width: 30px;
-      max-width: 100%;
-      box-sizing: border-box;
+      border: none !important;
+      background: transparent !important;
+      outline: none !important;
+      font-size: 16pt !important;
+      line-height: 1.2 !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      height: auto !important;
       position: relative;
-      z-index: 1;
-      /* ให้ข้อความอยู่บนเส้น */
-    }
-
-    .dot-input.box {
-      border: 1px solid #000;
-      background: #fff;
-      padding: 0 4px;
-      height: 24px;
-      margin: 0;
-    }
-
-    .dot-input.box.full {
-      width: 100%;
-      box-sizing: border-box;
-    }
-
-    .content-block {
-      font-family: "TH SarabunPSK";
-      font-size: 16pt;
-      line-height: 1.0;
-      margin: 0;
-      text-align: justify;
-      text-justify: inter-word;
-    }
-
-    .content-block.paragraph {
-      text-indent: 2.5cm;
-      margin-top: 0.5em;
-      line-height: 1.3;
-    }
-
-    .content-block.single {
-      line-height: 1.0;
-    }
-
-    .content-block.indent-first {
-      text-indent: 2.5cm;
-      display: block;
-    }
-
-    .indent-block {
-      margin-left: 2.5cm;
-      text-align: left;
-      font-family: 'TH SarabunPSK';
-      font-size: 16pt;
-      line-height: 1.2;
+      top: 3px !important;
     }
 
     .chip {
-      display: inline;
-      padding: 0 1px;
-      margin: 0;
-      border: 1px solid #000;
-      background: #fff;
-      font-family: "TH SarabunPSK";
-      font-size: 16pt;
-      line-height: 1em;
-      white-space: nowrap;
-      vertical-align: baseline;
+      border: none !important;
+      background: transparent !important;
+      box-shadow: none !important;
     }
-
-    .keep {
-      white-space: nowrap;
-    }
-
-    .signature-wrapper {
-      display: flex;
-      justify-content: center;
-      margin-top: 2em;
-    }
-
-    .signature-block {
-      margin-top: 50px;
-      margin-left: 187px;
-      text-align: center;
-      font-family: 'TH SarabunPSK';
-      font-size: 16pt;
-      line-height: 1.2;
-    }
-
-    .sig-name {
-      display: block;
-      white-space: nowrap;
-    }
-
-    .sig-position {
-      display: block;
-      white-space: nowrap;
-    }
-
-    .footer-actions {
-      margin-top: 24px;
-      padding-top: 16px;
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-      border-top: 1px solid #e5e7eb;
-    }
-
-    @media print {
-
-      header,
-      .footer-actions {
-        display: none !important;
-      }
-
-      body {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-      }
-
-      .page {
-        margin: 0;
-        box-shadow: none;
-        /* กำหนดขอบแต่ละด้าน: บน 2cm, ขวา 2cm, ล่าง 2cm, ซ้าย 2.5cm */
-        padding: 3cm 2cm 3cm 3cm;
-        width: 21cm;
-        min-height: 29.7cm;
-        border: 2px solid #fff !important;
-      }
-
-      .dot-line::after {
-        content: "";
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 2px;
-        height: 2px;
-        background-image: radial-gradient(circle, #000 0.6px, transparent 0.6px);
-        background-size: 4px 2px;
+  }
 
 
-        background-repeat: repeat-x;
-      }
+  /* ฟอนต์ Sarabun */
+  @font-face {
+    font-family: 'TH SarabunPSK';
+    src: url('/fonts/THSarabunPSK.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
 
-      .dot-input {
-        border: none !important;
-        background: transparent !important;
-        outline: none !important;
-        font-size: 16pt !important;
-        line-height: 1.2 !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        height: auto !important;
-        position: relative;
-        top: 3px !important;
-      }
+  @font-face {
+    font-family: 'TH SarabunPSK';
+    src: url('/fonts/THSarabunPSK-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+  }
 
-      .chip {
-        border: none !important;
-        background: transparent !important;
-        box-shadow: none !important;
-      }
-    }
+  @font-face {
+    font-family: 'TH SarabunPSK';
+    src: url('fonts/THSarabunPSK.ttf') format('truetype');
+  }
 
-
-    /* ฟอนต์ Sarabun */
-    @font-face {
-      font-family: 'TH SarabunPSK';
-      src: url('/fonts/THSarabunPSK.ttf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
-    }
-
-    @font-face {
-      font-family: 'TH SarabunPSK';
-      src: url('/fonts/THSarabunPSK-Bold.ttf') format('truetype');
-      font-weight: bold;
-      font-style: normal;
-    }
-
-    @font-face {
-      font-family: 'TH SarabunPSK';
-      src: url('fonts/THSarabunPSK.ttf') format('truetype');
-    }
-
-    body {
-      font-family: 'TH SarabunPSK', sans-serif;
-    }
+  body {
+    font-family: 'TH SarabunPSK', sans-serif;
+  }
   </style>
 </head>
 
 <body>
-  <header class="bg-teal-500 text-white p-4 flex justify-between items-center shadow-md">
+  <!-- <header class="bg-teal-500 text-white p-4 flex justify-between items-center shadow-md"
+    style="font-family: Arial, Helvetica, sans-serif;">
     <div class="flex items-center space-x-3">
       <div class="w-[56px] h-[56px] flex items-center justify-center relative overflow-visible">
-        <svg xmlns="http://www.w3.org/2000/svg" class="absolute scale-[1.4] text-white" style="width:60px;height:60px"
-          fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg xmlns="http://www.w3.org/2000/svg" class="absolute scale-[1.4] text-white"
+          style="width: 60px; height: 60px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
             d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m0 0a2 2 0 00-2-2H5a2 2 0 00-2 2m18 0v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8" />
         </svg>
@@ -395,11 +406,11 @@ $len = max(20, $len);
       <div class="leading-tight">
         <div class="text-[16px] font-bold">Smart</div>
         <div class="text-[16px] font-bold -mt-[2px]">Government</div>
-        <div class="text-[13px] mt-0">Letter Management System</div>
+        <div class="text-[13px] mt-[0px]">Letter Management System</div>
       </div>
     </div>
     <div class="flex items-center space-x-4">
-      <a href="../home.html">
+      <a href="home.html">
         <div class="px-4 py-2 rounded-[11px] font-bold transition bg-white text-teal-500 shadow">หน้าหลัก</div>
       </a>
       <a href="form_Memo.html">
@@ -407,8 +418,8 @@ $len = max(20, $len);
       </a>
       <div class="bg-white text-teal-500 px-4 py-2 rounded-[11px] shadow flex items-center space-x-2">
         <div class="text-right leading-tight">
-          <div class="font-bold text-[14px]"><?= h($ownerName ?: 'ผู้ใช้งาน') ?></div>
-          <div class="text-[12px]"><?= h($position ?: '') ?></div>
+          <div class="font-bold text-[14px]">ดร.พิทย์พิมล ชูรอด</div>
+          <div class="text-[12px]">อาจารย์</div>
         </div>
         <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
@@ -419,23 +430,49 @@ $len = max(20, $len);
         </div>
       </div>
     </div>
-  </header>
+  </header> -->
+
+  <?php if (isset($_GET['saved']) && $_GET['saved'] == '1'): ?>
+  <div id="alertBox" class="bg-green-500 text-white px-4 py-2 rounded-md text-center mb-4 shadow-md">
+    ✅ บันทึกสำเร็จ
+  </div>
+  <?php elseif (isset($_GET['err']) && $_GET['err'] == 'validate'): ?>
+  <div id="alertBox" class="bg-red-500 text-white px-4 py-2 rounded-md text-center mb-4 shadow-md">
+    ❌ กรุณากรอกข้อมูลให้ครบถ้วน
+  </div>
+  <?php elseif (isset($_GET['err']) && $_GET['err'] == 'server'): ?>
+  <div id="alertBox" class="bg-red-600 text-white px-4 py-2 rounded-md text-center mb-4 shadow-md">
+    ⚠️ เกิดข้อผิดพลาดในระบบ กรุณาลองใหม่อีกครั้ง
+  </div>
+  <?php endif; ?>
 
   <main class="page">
     <form id="updateForm" action="update_memo.php" method="post">
       <!-- hidden input ครบทุก field_id -->
+      <!-- hidden input ครบทุก field_id + ตั้งค่าเริ่มต้น -->
       <input type="hidden" name="document_id" value="<?= h($document['document_id']) ?>">
-      <input type="hidden" name="doc_date" id="hidden_doc_date">
-      <input type="hidden" name="ownerName" id="hidden_ownerName">
-      <input type="hidden" name="position" id="hidden_position">
-      <input type="hidden" name="joinType" id="hidden_joinType">
-      <input type="hidden" name="courseName" id="hidden_courseName">
-      <input type="hidden" name="joinDates" id="hidden_joinDates">
-      <input type="hidden" name="location" id="hidden_location">
-      <input type="hidden" name="amountStr" id="hidden_amountStr">
-      <input type="hidden" name="vehicle" id="hidden_vehicle">
-      <input type="hidden" name="faculty" id="hidden_faculty">
-      <input type="hidden" name="department" id="hidden_department">
+
+      <!-- สำคัญ: ให้ doc_date เป็นรูปแบบเดิม (YYYY-MM-DD) ที่ดึงมาจาก DB -->
+      <input type="hidden" name="doc_date" id="hidden_doc_date" value="<?= h($docDate) ?>">
+
+      <input type="hidden" name="fullname" id="hidden_ownerName" value="<?= h($ownerName) ?>">
+      <input type="hidden" name="position" id="hidden_position" value="<?= h($position) ?>">
+
+      <!-- ส่ง purpose เป็นรหัส ไม่ใช่ข้อความไทย -->
+      <input type="hidden" name="purpose" id="hidden_joinType" value="<?= h($purposeCode) ?>">
+
+      <input type="hidden" name="event_title" id="hidden_courseName" value="<?= h($courseName) ?>">
+      <input type="hidden" name="range_date" id="hidden_joinDates" value="<?= h($joinDates) ?>">
+      <input type="hidden" name="place" id="hidden_location" value="<?= h($location) ?>">
+      <input type="hidden" name="amount" id="hidden_amountStr" value="<?= h($amountStr) ?>">
+      <input type="hidden" name="car_plate" id="hidden_vehicle" value="<?= h($vehicle) ?>">
+      <input type="hidden" name="faculty" id="hidden_faculty" value="<?= h($faculty) ?>">
+      <input type="hidden" name="department" id="hidden_department" value="<?= h($department) ?>">
+
+      <!-- ตัวเลือกช่วงวันที่: ใช้ range เป็นค่า default ตาม UI ปัจจุบัน -->
+      <input type="hidden" name="date_option" id="hidden_dateOption" value="range">
+      <input type="hidden" name="single_date" id="hidden_singleDate" value="">
+
 
       <!-- หัวบันทึก -->
       <div style="display:flex; align-items:flex-end; justify-content:flex-start; gap:20px; margin-bottom:0.5em;">
@@ -453,19 +490,19 @@ $len = max(20, $len);
           <div class="doc-label" style="font-size:20pt; font-family:'TH SarabunPSK'; font-weight:bold;">ส่วนราชการ</div>
           <div class="dot-line">
             <input type="text" class="dot-input box full"
-              value="<?= h($faculty . ' ' . $department ?: 'คณะ... ภาควิชา...') ?>" />
+              value="  <?= h($faculty . ' ภาค' . $department . ' โทร. 7064' ?: 'คณะ... ภาควิชา...') ?>" />
           </div>
         </div>
 
         <div class="doc-row">
           <div class="doc-label" style="font-size:20pt; font-family:'TH SarabunPSK'; font-weight:bold;">ที่</div>
           <div class="dot-line">
-            <input type="text" class="dot-input box" value="<?= h($document['doc_no'] ?: 'ทส. พิเศษ.486/2568') ?>"
+            <input type="text" class="dot-input box" value="  <?= h($document['doc_no'] ?: 'ทส. พิเศษ.486/2568') ?>"
               style="width:240px;" />
           </div>
           <div class="doc-label" style="font-size:20pt; font-family:'TH SarabunPSK'; font-weight:bold;">วันที่</div>
           <div class="dot-line">
-            <input type="text" class="dot-input box" value="<?= h($thaiDocDate ?: '') ?>" style="width:200px;" />
+            <input type="text" class="dot-input box" value="  <?= h($thaiDocDate ?: '') ?>" style="width:200px;" />
           </div>
         </div>
 
@@ -473,7 +510,7 @@ $len = max(20, $len);
           <div class="doc-label" style="font-size:20pt; font-family:'TH SarabunPSK'; font-weight:bold;">เรื่อง</div>
           <div class="dot-line">
             <input type="text" class="dot-input box"
-              style="font-size:16pt; font-family:'TH SarabunPSK'; width: <?= $len ?>ch;" value="<?= h($subject) ?>" />
+              style="font-size:16pt; font-family:'TH SarabunPSK'; width: <?= $len ?>ch;" value="  <?= h($subject) ?>" />
           </div>
         </div>
       </div>
@@ -510,9 +547,10 @@ $len = max(20, $len);
         วงเงินทั้งสิ้น <span class="chip" contenteditable="true"
           data-target="amountStr"><?= h($prettyAmount ?: '') ?></span> บาท
         โดยขอใช้แหล่งเงินจัดสรรให้หน่วยงาน ประจำปีงบประมาณ
-        <span class="chip" contenteditable="true"
-          data-target="doc_date"><?= h($thaiYear ? 'พ.ศ. ' . $thaiYear : 'พ.ศ. ....') ?></span>
-        ในส่วนของภาควิชา<span><?= h($department ?: '...') ?></span>
+        <span class="chip" contenteditable="true" data-target="fiscal_year_display">
+          <?= h($thaiYear ? 'พ.ศ. ' . $thaiYear : 'พ.ศ. ....') ?>
+        </span>
+
         แผนงานจัดการศึกษาระดับอุดมศึกษา กองทุนพัฒนาบุคลากร หมวดค่าใช้สอย (รายละเอียดตามเอกสารแนบ)
       </div>
 
@@ -546,30 +584,42 @@ $len = max(20, $len);
   </main>
 
   <script>
-    document.getElementById("updateForm").addEventListener("submit", function () {
-      document.querySelectorAll("[contenteditable][data-target]").forEach(el => {
-        const target = el.dataset.target;
-        const hidden = document.getElementById("hidden_" + target);
-        if (hidden) hidden.value = el.innerText.trim();
-      });
+  const alertBox = document.getElementById('alertBox');
+  if (alertBox) {
+    setTimeout(() => {
+      alertBox.style.transition = "opacity 0.5s ease";
+      alertBox.style.opacity = 0;
+      setTimeout(() => alertBox.remove(), 500);
+    }, 3000); // ซ่อนหลัง 3 วินาที
+  }
+  document.getElementById("updateForm").addEventListener("submit", function() {
+    document.querySelectorAll("[contenteditable][data-target]").forEach(el => {
+      const target = el.dataset.target;
+      // กันพลาด: ห้ามเขียนทับ doc_date
+      if (target === 'doc_date') return;
+
+      const hidden = document.getElementById("hidden_" + target);
+      if (hidden) hidden.value = el.innerText.trim();
     });
-    document.querySelectorAll('.editable[contenteditable], .chip[contenteditable]').forEach(el => {
-      el.addEventListener('keydown', e => {
-        if (e.key === 'Enter') e.preventDefault();
-      });
-      el.addEventListener('paste', e => {
-        e.preventDefault();
-        const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\r?\n/g, ' ');
-        document.execCommand('insertText', false, text);
-      });
+  });
+
+  document.querySelectorAll('.editable[contenteditable], .chip[contenteditable]').forEach(el => {
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter') e.preventDefault();
     });
-    (function () {
-      const box = document.getElementById('signatureBlock');
-      if (!box) return;
-      const nameEl = box.querySelector('.sig-name');
-      // กำหนดความกว้างกล่อง = ความกว้างบรรทัดชื่อ -> ตำแหน่งจะกึ่งกลางใต้ชื่อพอดี
-      box.style.width = nameEl.offsetWidth + 'px';
-    })();
+    el.addEventListener('paste', e => {
+      e.preventDefault();
+      const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\r?\n/g, ' ');
+      document.execCommand('insertText', false, text);
+    });
+  });
+  (function() {
+    const box = document.getElementById('signatureBlock');
+    if (!box) return;
+    const nameEl = box.querySelector('.sig-name');
+    // กำหนดความกว้างกล่อง = ความกว้างบรรทัดชื่อ -> ตำแหน่งจะกึ่งกลางใต้ชื่อพอดี
+    box.style.width = nameEl.offsetWidth + 'px';
+  })();
   </script>
 </body>
 
