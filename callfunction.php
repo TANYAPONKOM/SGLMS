@@ -56,7 +56,7 @@ switch ((int)$res['role_id']) {
         header('Location: officer/home.php');
         break;
     case 3:
-        header('Location: user/home.html'); 
+        header('Location: user/home.php'); 
         break;
     default:
         header('Location: login.html?error=role');
