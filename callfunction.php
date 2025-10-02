@@ -56,7 +56,7 @@ switch ((int)$res['role_id']) {
         header('Location: officer/home.php');
         break;
     case 3:
-        header('Location: user/home.html'); // 👈 เปลี่ยนให้ใช้ home.php (ไม่ใช่ .html)
+        header('Location: user/home.php'); // 👈 เปลี่ยนให้ใช้ home.php (ไม่ใช่ .html)
         break;
     default:
         header('Location: login.html?error=role');

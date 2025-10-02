@@ -9,6 +9,19 @@ require_once __DIR__ . '/../functions.php';
 $pdo = getPDO();
 $users = getActiveUsers();
 
+// 📌 รับค่าจาก query string
+$activeTab = $_GET['tab'] ?? 'all';
+$dateFrom  = $_GET['date_from'] ?? '';
+$dateTo    = $_GET['date_to'] ?? '';
+
+// 📌 สร้าง SQL
+$sql = "SELECT d.document_id, d.doc_no, d.doc_date, d.status, d.remark, 
+               u.fullname
+        FROM documents d
+        LEFT JOIN users u ON d.owner_id = u.user_id
+        WHERE 1=1";
+$params = [];
+
 // ✅ ฟิกข้อมูลตัวอย่างเอกสาร
 $documents = [
     [
@@ -42,10 +55,26 @@ $filteredDocs = ($activeTab === 'all')
     ? $documents
     : array_filter($documents, fn($d) => $d['status'] === $activeTab);
 
+// ✅ ฟิลเตอร์เพิ่มตามวันที่ (date_from)
+if (!empty($dateFrom)) {
+    $filteredDocs = array_filter($filteredDocs, function($d) use ($dateFrom) {
+        return date('Y-m-d', strtotime($d['date'])) === $dateFrom;
+    });
+}
+
+
 $totalDocs     = count($documents);
 $approvedDocs  = count(array_filter($documents, fn($d) => $d['status'] === 'approved'));
 $pendingDocs   = count(array_filter($documents, fn($d) => $d['status'] === 'pending'));
-$rejectedDocs  = count(array_filter($documents, fn($d) => $d['status'] === 'rejected'));    
+$rejectedDocs  = count(array_filter($documents, fn($d) => $d['status'] === 'rejected'));   
+
+function thai_date($date) {
+    $time = strtotime($date);
+    $d = date("d", $time);
+    $m = date("m", $time);
+    $y = date("Y", $time) + 543;
+    return "$d/$m/$y";
+}
 ?>
 
 <!DOCTYPE html>
@@ -183,10 +212,8 @@ $rejectedDocs  = count(array_filter($documents, fn($d) => $d['status'] === 'reje
 
             <!-- ฟอร์มเลือกช่วงวัน -->
             <form method="get" class="flex space-x-2 items-center">
-                <label class="text-sm text-gray-600">ช่วงวันที่:</label>
+                <label class="text-sm text-gray-600">วันที่:</label>
                 <input type="date" name="date_from" value="<?= htmlspecialchars($_GET['date_from'] ?? '') ?>"
-                    class="border rounded px-2 py-1 text-sm">
-                <input type="date" name="date_to" value="<?= htmlspecialchars($_GET['date_to'] ?? '') ?>"
                     class="border rounded px-2 py-1 text-sm">
                 <button type="submit"
                     class="bg-teal-500 text-white px-3 py-1 rounded text-sm hover:bg-teal-600 transition">ค้นหา</button>
@@ -222,7 +249,7 @@ $rejectedDocs  = count(array_filter($documents, fn($d) => $d['status'] === 'reje
                         </td>
                         <!-- Date -->
                         <td class="px-4 py-3 text-gray-600">
-                            <?= date("d M Y", strtotime($doc['date'])) ?>
+                            <?=date("d/m/Y", strtotime($doc['date']))?>
                         </td>
                         <!-- Status -->
                         <td class="px-4 py-3">
@@ -235,21 +262,19 @@ $rejectedDocs  = count(array_filter($documents, fn($d) => $d['status'] === 'reje
                             <?php endif; ?>
                         </td>
                         <!-- Action -->
+                        <!-- Action -->
                         <td class="px-4 py-3 text-center align-middle">
-                            <a href="#" class="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-sky-400 to-sky-500 
-              hover:from-sky-500 hover:to-sky-600 text-white shadow-md transition duration-200 ease-in-out mx-auto"
-                                title="เปิดเอกสาร">
+                            <a href="#" class="flex items-center justify-center w-10 h-10 rounded-full 
+       bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-500 hover:to-sky-600 
+       text-white shadow-md transition duration-200 ease-in-out mx-auto" title="ดูเวลา / เปิดเอกสาร">
+                                <!-- Clock Icon -->
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2l4-4m-6 6h6m2 5H7a2 2 0 01-2-2V5a2 2 0 
-             012-2h5.586A2 2 0 0114 4.414L19.586 
-             10A2 2 0 0120 11.586V19a2 2 0 
-             01-2 2z" />
+                                    stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-
                             </a>
                         </td>
-
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
