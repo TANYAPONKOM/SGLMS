@@ -57,16 +57,25 @@ function login(string $username, string $password): array {
         'role_name' => $user['role_name'] ?? ''   // 🔹 กัน error
     ];
 }
-// ใส่ต่อท้ายไฟล์ functions.php เดิมได้เลย
-function db(): PDO {
-    $dbHost = 'localhost';
-    $dbName = 'government_letter';
-    $dbUser = 'root';
-    $dbPass = '';
-    return new PDO(
-        "mysql:host=$dbHost;dbname=$dbName;charset=utf8mb4",
-        $dbUser,
-        $dbPass,
-        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
-    );
+
+function getAllUsers() {
+    $pdo = getPDO();
+    $stmt = $pdo->query("SELECT user_id, username, password, fullname, email, role_id, position, created_at, is_active 
+                         FROM users ORDER BY user_id ASC");
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function addLog($userId, $action) {
+    $pdo = getPDO();
+    $stmt = $pdo->prepare("INSERT INTO logs (user_id, action) VALUES (?, ?)");
+    $stmt->execute([$userId, $action]);
+}
+
+function getActiveUsers() {
+    $pdo = getPDO();
+    $stmt = $pdo->query("SELECT user_id, username, fullname, email, role_id, position, created_at, is_active 
+                         FROM users 
+                         WHERE is_active = 1
+                         ORDER BY user_id ASC");
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
