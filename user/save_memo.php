@@ -4,7 +4,7 @@ session_start();
 
 /** ==== DEV FLAGS ==== */
 $DEV_AUTO_LOGIN = true;   // เปิดทดสอบ: ผ่านแม้ยังไม่ล็อกอิน (ตั้ง user_id=1)
-$DEBUG_ERRORS   = true;   // ส่งรายละเอียด error (อย่าเปิดในโปรดักชัน)
+$DEBUG_ERRORS = true;   // ส่งรายละเอียด error (อย่าเปิดในโปรดักชัน)
 
 if ($DEV_AUTO_LOGIN && empty($_SESSION['user_id'])) {
     $_SESSION['user_id'] = 1; // ผู้ใช้ทดสอบ ที่มีอยู่ในตาราง users
@@ -25,49 +25,57 @@ try {
         }
         exit;
     }
-    $userId = (int)$_SESSION['user_id'];
+    $userId = (int) $_SESSION['user_id'];
 
     /** ===== รับค่า POST ===== */
-    $templateId   = (int)($_POST['template_id']   ?? 1);
-    $departmentId = (int)($_POST['department_id'] ?? 1);
+    $templateId = (int) ($_POST['template_id'] ?? 1);
+    $departmentId = (int) ($_POST['department_id'] ?? 1);
 
-    $docDate    = trim($_POST['doc_date']    ?? '');   // YYYY-MM-DD
-    $fullname   = trim($_POST['fullname']    ?? '');
-    $position   = trim($_POST['position']    ?? '');
-    $purpose    = $_POST['purpose']          ?? '';    // academic|training|meeting|other
+    $docDate = trim($_POST['doc_date'] ?? '');   // YYYY-MM-DD
+    $fullname = trim($_POST['fullname'] ?? '');
+    $position = trim($_POST['position'] ?? '');
+    $purpose = $_POST['purpose'] ?? '';    // academic|training|meeting|other
     $eventTitle = trim($_POST['event_title'] ?? '');
 
-    $dateOption = $_POST['date_option']      ?? '';    // single|range
+    $dateOption = $_POST['date_option'] ?? '';    // single|range
     $singleDate = trim($_POST['single_date'] ?? '');
-    $rangeDate  = trim($_POST['range_date']  ?? '');
+    $rangeDate = trim($_POST['range_date'] ?? '');
 
-    $isOnline   = isset($_POST['is_online']) ? 1 : 0;
-    $place      = trim($_POST['place']       ?? '');
+    $isOnline = isset($_POST['is_online']) ? 1 : 0;
+    $place = trim($_POST['place'] ?? '');
 
-    $noCost     = isset($_POST['no_cost']) ? 1 : 0;
-    $amountRaw  = str_replace(',', '', trim($_POST['amount'] ?? '0'));
-    $amount     = $noCost ? 0.00 : (is_numeric($amountRaw) ? (float)$amountRaw : 0.00);
+    $noCost = isset($_POST['no_cost']) ? 1 : 0;
+    $amountRaw = str_replace(',', '', trim($_POST['amount'] ?? '0'));
+    $amount = $noCost ? 0.00 : (is_numeric($amountRaw) ? (float) $amountRaw : 0.00);
 
-    $carUsed    = isset($_POST['car_used']) ? 1 : 0;
-    $carPlate   = trim($_POST['car_plate'] ?? '');
+    $carUsed = isset($_POST['car_used']) ? 1 : 0;
+    $carPlate = trim($_POST['car_plate'] ?? '');
 
     // เก็บข้อความคณะ/ภาควิชา ใน document_values (field_id 10,11)
-    $faculty    = trim($_POST['faculty']    ?? '');
+    $faculty = trim($_POST['faculty'] ?? '');
     $department = trim($_POST['department'] ?? '');
 
     /** ===== ตรวจฝั่งเซิร์ฟเวอร์ ===== */
     $errors = [];
-    if ($docDate === '')                                $errors['doc_date']    = 'required';
-    if ($purpose === '')                                $errors['purpose']     = 'required';
-    if ($eventTitle === '')                             $errors['event_title'] = 'required';
-    if ($dateOption === 'single' && $singleDate === '') $errors['single_date'] = 'required';
-    if ($dateOption === 'range'  && $rangeDate  === '') $errors['range_date']  = 'required';
-    if (!$isOnline && $place === '')                    $errors['place']       = 'required';
-    if (!$noCost && !is_numeric($amountRaw))            $errors['amount']      = 'number';
-    if ($carUsed && $carPlate === '')                   $errors['car_plate']   = 'required';
+    if ($docDate === '')
+        $errors['doc_date'] = 'required';
+    if ($purpose === '')
+        $errors['purpose'] = 'required';
+    if ($eventTitle === '')
+        $errors['event_title'] = 'required';
+    if ($dateOption === 'single' && $singleDate === '')
+        $errors['single_date'] = 'required';
+    if ($dateOption === 'range' && $rangeDate === '')
+        $errors['range_date'] = 'required';
+    if (!$isOnline && $place === '')
+        $errors['place'] = 'required';
+    if (!$noCost && !is_numeric($amountRaw))
+        $errors['amount'] = 'number';
+    if ($carUsed && $carPlate === '')
+        $errors['car_plate'] = 'required';
 
     $wantsJson = (isset($_POST['_ajax']) && $_POST['_ajax'] === '1')
-                 || (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false);
+        || (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false);
 
     if (!empty($errors)) {
         if ($wantsJson) {
@@ -84,36 +92,39 @@ try {
     $pdo = db();
     $pdo->beginTransaction();
 
-    // 1) สร้างเอกสาร
-    $stmt = $pdo->prepare("
-        INSERT INTO documents (template_id, owner_id, department_id, doc_no, doc_date, status, remark)
-        VALUES (:template_id, :owner_id, :department_id, NULL, :doc_date, 'submitted', NULL)
-    ");
-    $stmt->execute([
-        ':template_id'   => $templateId,
-        ':owner_id'      => $userId,
-        ':department_id' => $departmentId,
-        ':doc_date'      => $docDate,
-    ]);
-    $documentId = (int)$pdo->lastInsertId();  // PK = documents.document_id
-
-    // 2) map ฟิลด์ตาม template_fields.field_id
+    // 1) map ฟิลด์
     $joinType = match ($purpose) {
         'academic' => 'นำเสนอผลงานทางวิชาการ',
         'training' => 'เข้ารับการฝึกอบรมหลักสูตร',
-        'meeting'  => 'เข้าร่วมประชุมวิชาการในงาน',
-        default    => 'อื่นๆ',
+        'meeting' => 'เข้าร่วมประชุมวิชาการในงาน',
+        default => 'อื่นๆ',
     };
+    $subject = trim($joinType . $eventTitle);
+
+    // 2) สร้างเอกสาร
+    $stmt = $pdo->prepare("
+    INSERT INTO documents (template_id, owner_id, department_id, doc_no, doc_date, subject, status, remark)
+    VALUES (:template_id, :owner_id, :department_id, NULL, :doc_date, :subject, 'submitted', NULL)
+");
+    $stmt->execute([
+        ':template_id' => $templateId,
+        ':owner_id' => $userId,
+        ':department_id' => $departmentId,
+        ':doc_date' => $docDate,
+        ':subject' => $subject,
+    ]);
+    $documentId = (int) $pdo->lastInsertId();
+
     $values = [
-        1  => $docDate,
-        2  => $fullname,
-        3  => $position,
-        4  => $joinType,
-        5  => $eventTitle,
-        6  => ($dateOption === 'single') ? $singleDate : $rangeDate,
-        7  => $isOnline ? 'เข้าร่วมรูปแบบออนไลน์' : $place,
-        8  => number_format($amount, 2, '.', ''),
-        9  => $carUsed ? $carPlate : '',
+        1 => $docDate,
+        2 => $fullname,
+        3 => $position,
+        4 => $joinType,
+        5 => $eventTitle,
+        6 => ($dateOption === 'single') ? $singleDate : $rangeDate,
+        7 => $isOnline ? 'เข้าร่วมรูปแบบออนไลน์' : $place,
+        8 => number_format($amount, 2, '.', ''),
+        9 => $carUsed ? $carPlate : '',
         10 => $faculty,
         11 => $department,
     ];
@@ -130,11 +141,12 @@ try {
     ");
 
     foreach ($values as $fieldId => $val) {
-        if (!isset($allowIds[$fieldId])) continue;
+        if (!isset($allowIds[$fieldId]))
+            continue;
         $ins->execute([
             ':document_id' => $documentId,
-            ':field_id'    => $fieldId,
-            ':value_text'  => $val
+            ':field_id' => $fieldId,
+            ':value_text' => $val
         ]);
     }
 
@@ -151,11 +163,13 @@ try {
     echo json_encode(['ok' => true, 'document_id' => $documentId]);
 
 } catch (Throwable $e) {
-    if (isset($pdo) && $pdo->inTransaction()) $pdo->rollBack();
+    if (isset($pdo) && $pdo->inTransaction())
+        $pdo->rollBack();
     if ($wantsJson ?? false) {
         header('Content-Type: application/json; charset=utf-8', true, 500);
         $res = ['ok' => false, 'error' => 'server'];
-        if ($DEBUG_ERRORS) $res['message'] = $e->getMessage();
+        if ($DEBUG_ERRORS)
+            $res['message'] = $e->getMessage();
         echo json_encode($res);
     } else {
         header('Location: form_Memo.html?err=server', true, 302);

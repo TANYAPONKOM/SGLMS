@@ -1,21 +1,17 @@
-<?php
-// user/edit_document.php
-session_start();
-
-/** DEV: auto login ระหว่างพัฒนา */
+<?php // user/edit_document.php 
+session_start(); /** DEV: auto login ระหว่างพัฒนา */
 $DEV_AUTO_LOGIN = true;
 if ($DEV_AUTO_LOGIN && empty($_SESSION['user_id'])) {
   $_SESSION['user_id'] = 1;
 }
-
-require_once __DIR__ . '/../functions.php';
+require_once __DIR__
+  . '/../functions.php';
 if (empty($_SESSION['user_id'])) {
   http_response_code(401);
   echo 'Unauthorized';
   exit;
 }
 $userId = (int) $_SESSION['user_id'];
-
 function h($s)
 {
   return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8');
@@ -24,35 +20,53 @@ function thai_date($ymd)
 {
   if (!$ymd || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $ymd))
     return '';
-  [$y, $m, $d] = explode('-', $ymd);
+
+  [$y, $m, $d] = explode('-', $ymd);   // ✅ แก้แล้ว
   $m = (int) $m;
   $d = (int) $d;
   $y = (int) $y + 543;
-  $thMonths = [1 => 'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+
+  $thMonths = [
+    1 => 'มกราคม',
+    'กุมภาพันธ์',
+    'มีนาคม',
+    'เมษายน',
+    'พฤษภาคม',
+    'มิถุนายน',
+    'กรกฎาคม',
+    'สิงหาคม',
+    'กันยายน',
+    'ตุลาคม',
+    'พฤศจิกายน',
+    'ธันวาคม'
+  ];
+
   return $d . ' ' . $thMonths[$m] . ' ' . $y;
 }
+
 
 $pdo = db();
 
 /** รับ id เอกสาร; ถ้าไม่ส่งมาให้หยิบของล่าสุดของ user */
 $docId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 if ($docId <= 0) {
-  $q = $pdo->prepare("SELECT document_id FROM documents WHERE owner_id = :u ORDER BY document_id DESC LIMIT 1");
+  $q = $pdo->prepare("SELECT document_id FROM documents WHERE owner_id = :u ORDER BY document_id DESC
+    LIMIT 1");
   $q->execute([':u' => $userId]);
   $docId = (int) ($q->fetchColumn() ?: 0);
   if ($docId <= 0) {
     echo 'ยังไม่มีเอกสารของคุณ';
     exit;
   }
-}
-
-/** ดึงหัวเอกสาร */
-$doc = $pdo->prepare("SELECT document_id, template_id, owner_id, department_id, doc_no, doc_date, status
-                      FROM documents
-                      WHERE document_id = :id AND owner_id = :u
-                      LIMIT 1");
+} /** ดึงหัวเอกสาร */
+$doc = $pdo->prepare("SELECT
+      document_id, template_id, owner_id, department_id, doc_no, doc_date, subject, status
+      FROM documents
+      WHERE document_id = :id AND owner_id = :u
+      LIMIT 1");
 $doc->execute([':id' => $docId, ':u' => $userId]);
 $document = $doc->fetch(PDO::FETCH_ASSOC);
+
 if (!$document) {
   echo 'ไม่พบเอกสาร หรือไม่มีสิทธิ์เข้าถึง';
   exit;
@@ -79,11 +93,22 @@ $vehicle = $valueMap[9] ?? '';
 $faculty = $valueMap[10] ?? '';
 $department = $valueMap[11] ?? '';
 
+// map joinType (ข้อความไทย) -> purpose (รหัสที่ backend ต้องการ)
+$purposeCode = 'training'; // ค่าเริ่มต้น
+switch (trim($joinType)) {
+  case 'นำเสนอผลงานทางวิชาการ': $purposeCode = 'academic'; break;
+  case 'เข้าร่วมประชุมวิชาการในงาน': $purposeCode = 'meeting'; break;
+  case 'เข้ารับการฝึกอบรมหลักสูตร': $purposeCode = 'training'; break;
+  default: $purposeCode = 'other'; break;
+}
+
+
 $thaiDocDate = thai_date($docDate);
 $prettyAmount = $amountStr !== '' ? number_format((float) $amountStr, 2) : '';
 
 /** header ช่วยประกอบบรรทัด */
-$hdr_agency = trim(($faculty ? $faculty : 'คณะ..................................') . ' ' . ($department ? 'ภาควิชา' . $department : 'ภาควิชา........................'));
+$hdr_agency = trim(($faculty ? $faculty : 'คณะ..................................') . ' ' . ($department ?
+  'ภาควิชา' . $department : 'ภาควิชา........................'));
 $hdr_subject = $joinType ?: 'เข้ารับการฝึกอบรมหลักสูตร';
 $hdr_to = 'คณบดี' . ($faculty ? $faculty : 'คณะ..................................');
 
@@ -92,6 +117,10 @@ $thaiYear = '';
 if ($docDate && preg_match('/^\d{4}/', $docDate)) {
   $thaiYear = ((int) substr($docDate, 0, 4) + 543);
 }
+$subject = $document['subject'] ?? '';
+$len = mb_strlen($subject, 'UTF-8');  // นับตัวอักษรแบบ UTF-8
+$len = max(20, $len);
+
 ?>
 <!DOCTYPE html>
 <html lang="th">
@@ -556,5 +585,6 @@ if ($docDate && preg_match('/^\d{4}/', $docDate)) {
         });
         </script>
 </body>
+
 
 </html>
