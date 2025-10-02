@@ -59,11 +59,9 @@ if ($docId <= 0) {
     exit;
   }
 } /** ดึงหัวเอกสาร */
-$doc = $pdo->prepare("SELECT
-      document_id, template_id, owner_id, department_id, doc_no, doc_date, subject, status
-      FROM documents
-      WHERE document_id = :id AND owner_id = :u
-      LIMIT 1");
+$doc = $pdo->prepare("SELECT document_id, template_id, owner_id, department_id, doc_no, doc_date, subject, header_text, status
+                      FROM documents WHERE document_id = :id AND owner_id = :u LIMIT 1");
+
 $doc->execute([':id' => $docId, ':u' => $userId]);
 $document = $doc->fetch(PDO::FETCH_ASSOC);
 
@@ -96,10 +94,18 @@ $department = $valueMap[11] ?? '';
 // map joinType (ข้อความไทย) -> purpose (รหัสที่ backend ต้องการ)
 $purposeCode = 'training'; // ค่าเริ่มต้น
 switch (trim($joinType)) {
-  case 'นำเสนอผลงานทางวิชาการ': $purposeCode = 'academic'; break;
-  case 'เข้าร่วมประชุมวิชาการในงาน': $purposeCode = 'meeting'; break;
-  case 'เข้ารับการฝึกอบรมหลักสูตร': $purposeCode = 'training'; break;
-  default: $purposeCode = 'other'; break;
+  case 'นำเสนอผลงานทางวิชาการ':
+    $purposeCode = 'academic';
+    break;
+  case 'เข้าร่วมประชุมวิชาการในงาน':
+    $purposeCode = 'meeting';
+    break;
+  case 'เข้ารับการฝึกอบรมหลักสูตร':
+    $purposeCode = 'training';
+    break;
+  default:
+    $purposeCode = 'other';
+    break;
 }
 
 
@@ -130,6 +136,8 @@ $len = max(20, $len);
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>บันทึกข้อความ #<?= h($document['document_id']) ?></title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <style>
   @import url("https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap");
 
@@ -462,6 +470,8 @@ $len = max(20, $len);
       <input type="hidden" name="purpose" id="hidden_joinType" value="<?= h($purposeCode) ?>">
 
       <input type="hidden" name="event_title" id="hidden_courseName" value="<?= h($courseName) ?>">
+
+
       <input type="hidden" name="range_date" id="hidden_joinDates" value="<?= h($joinDates) ?>">
       <input type="hidden" name="place" id="hidden_location" value="<?= h($location) ?>">
       <input type="hidden" name="amount" id="hidden_amountStr" value="<?= h($amountStr) ?>">
@@ -489,22 +499,34 @@ $len = max(20, $len);
         <div class="doc-row">
           <div class="doc-label" style="font-size:20pt; font-family:'TH SarabunPSK'; font-weight:bold;">ส่วนราชการ</div>
           <div class="dot-line">
-            <input type="text" class="dot-input box full"
-              value="  <?= h($faculty . ' ภาค' . $department . ' โทร. 7064' ?: 'คณะ... ภาควิชา...') ?>" />
+            <span class="chip" contenteditable="true" data-target="header_text">
+              <?= h($document['header_text'] ?? 'คณะ... ภาค... โทร...') ?>
+            </span>
           </div>
+          <input type="hidden" name="header_text" id="hidden_header_text"
+            value="<?= h($document['header_text'] ?? '') ?>">
+
         </div>
 
         <div class="doc-row">
           <div class="doc-label" style="font-size:20pt; font-family:'TH SarabunPSK'; font-weight:bold;">ที่</div>
           <div class="dot-line">
-            <input type="text" class="dot-input box" value="  <?= h($document['doc_no'] ?: 'ทส. พิเศษ.486/2568') ?>"
-              style="width:240px;" />
+            <span class="chip" contenteditable="true" data-target="doc_no">
+              <?= h($document['doc_no'] ?: 'ทส. พิเศษ.486/2568') ?>
+            </span>
           </div>
+          <input type="hidden" name="doc_no" id="hidden_doc_no" value="<?= h($document['doc_no'] ?: '') ?>">
+
           <div class="doc-label" style="font-size:20pt; font-family:'TH SarabunPSK'; font-weight:bold;">วันที่</div>
           <div class="dot-line">
-            <input type="text" class="dot-input box" value="  <?= h($thaiDocDate ?: '') ?>" style="width:200px;" />
+            <span class="chip" contenteditable="true" data-target="doc_date_display">
+              <?= h($thaiDocDate ?: '') ?>
+            </span>
           </div>
+          <input type="hidden" name="doc_date_display" id="hidden_doc_date_display"
+            value="<?= h($thaiDocDate ?: '') ?>">
         </div>
+
 
         <div class="doc-row">
           <div class="doc-label" style="font-size:20pt; font-family:'TH SarabunPSK'; font-weight:bold;">เรื่อง</div>
@@ -592,15 +614,73 @@ $len = max(20, $len);
       setTimeout(() => alertBox.remove(), 500);
     }, 3000); // ซ่อนหลัง 3 วินาที
   }
+
+  function parseThaiDate(str) {
+    const monthMap = {
+      "มกราคม": "01",
+      "กุมภาพันธ์": "02",
+      "มีนาคม": "03",
+      "เมษายน": "04",
+      "พฤษภาคม": "05",
+      "มิถุนายน": "06",
+      "กรกฎาคม": "07",
+      "สิงหาคม": "08",
+      "กันยายน": "09",
+      "ตุลาคม": "10",
+      "พฤศจิกายน": "11",
+      "ธันวาคม": "12"
+    };
+    const parts = str.trim().split(" ");
+    if (parts.length !== 3) return null;
+
+    const d = parts[0].replace(/\D/g, ""); // เลขวัน
+    const m = monthMap[parts[1]] || "01"; // เดือน
+    const y = parseInt(parts[2], 10) - 543; // ปี พ.ศ. → ค.ศ.
+
+    if (!d || !m || isNaN(y)) return null;
+    return `${y}-${m}-${d.padStart(2, "0")}`; // YYYY-MM-DD
+  }
   document.getElementById("updateForm").addEventListener("submit", function() {
     document.querySelectorAll("[contenteditable][data-target]").forEach(el => {
       const target = el.dataset.target;
-      // กันพลาด: ห้ามเขียนทับ doc_date
-      if (target === 'doc_date') return;
-
       const hidden = document.getElementById("hidden_" + target);
-      if (hidden) hidden.value = el.innerText.trim();
+      if (hidden) {
+        let text = el.innerText.trim();
+
+        if (target === "doc_date_display") {
+          const isoDate = parseThaiDate(text);
+          if (isoDate) {
+            document.getElementById("hidden_doc_date").value = isoDate; // ✅ อัปเดตจริง
+          }
+        }
+
+        hidden.value = text;
+      }
     });
+  });
+
+  function getQuery(name) {
+    const url = new URL(window.location.href);
+    return url.searchParams.get(name);
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    if (getQuery("saved") === "1" && getQuery("from") === "update") {
+      Swal.fire({
+        title: "บันทึกสำเร็จ",
+        text: "คุณต้องการกลับไปที่หน้าหลักหรือไม่?",
+        icon: "success",
+        showCancelButton: true,
+        confirmButtonText: "กลับหน้าหลัก",
+        cancelButtonText: "อยู่หน้านี้ต่อ",
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#aaa",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = "./home.php";
+        }
+      });
+    }
   });
 
   document.querySelectorAll('.editable[contenteditable], .chip[contenteditable]').forEach(el => {

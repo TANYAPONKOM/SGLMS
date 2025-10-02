@@ -100,11 +100,22 @@ try {
         default => 'อื่นๆ',
     };
     $subject = trim($joinType . $eventTitle);
+    $q = $pdo->prepare("SELECT d.department_name, d.phone, f.faculty_name
+                    FROM departments d
+                    JOIN faculties f ON d.faculty_id = f.faculty_id
+                    WHERE d.department_id = :id LIMIT 1");
+    $q->execute([':id' => $departmentId]);
+    $row = $q->fetch(PDO::FETCH_ASSOC);
 
-    // 2) สร้างเอกสาร
+    $hdrAgency = '';
+    if ($row) {
+        $hdrAgency = $row['faculty_name'] . ' ภาค' . $row['department_name'] . ' โทร. ' . $row['phone'];
+    }
+
+    // 2) สร้างเอกสาร พร้อม header_text
     $stmt = $pdo->prepare("
-    INSERT INTO documents (template_id, owner_id, department_id, doc_no, doc_date, subject, status, remark)
-    VALUES (:template_id, :owner_id, :department_id, NULL, :doc_date, :subject, 'submitted', NULL)
+    INSERT INTO documents (template_id, owner_id, department_id, doc_no, doc_date, subject, header_text, status, remark)
+    VALUES (:template_id, :owner_id, :department_id, NULL, :doc_date, :subject, :header_text, 'submitted', NULL)
 ");
     $stmt->execute([
         ':template_id' => $templateId,
@@ -112,8 +123,12 @@ try {
         ':department_id' => $departmentId,
         ':doc_date' => $docDate,
         ':subject' => $subject,
+        ':header_text' => $hdrAgency
     ]);
     $documentId = (int) $pdo->lastInsertId();
+
+
+
 
     $values = [
         1 => $docDate,

@@ -20,7 +20,6 @@ try {
 
   $documentId = (int) ($_POST['document_id'] ?? 0);
   $templateId = (int) ($_POST['template_id'] ?? 1);
-  $departmentId = (int) ($_POST['department_id'] ?? 1);
 
   if ($documentId <= 0) {
     header('Location: /form_Memo.html?err=nodoc', true, 302);
@@ -38,103 +37,92 @@ try {
   }
 
   // รับค่า
-  $docDate = trim($_POST['doc_date'] ?? '');
-  $fullname = trim($_POST['fullname'] ?? '');
-  $position = trim($_POST['position'] ?? '');
-  $purpose = $_POST['purpose'] ?? '';
+  $docDate    = trim($_POST['doc_date'] ?? '');
+  $fullname   = trim($_POST['fullname'] ?? '');
+  $position   = trim($_POST['position'] ?? '');
+  $purpose    = $_POST['purpose'] ?? '';
   $eventTitle = trim($_POST['event_title'] ?? '');
 
   $dateOption = $_POST['date_option'] ?? '';
   $singleDate = trim($_POST['single_date'] ?? '');
-  $rangeDate = trim($_POST['range_date'] ?? '');
+  $rangeDate  = trim($_POST['range_date'] ?? '');
 
-  $isOnline = isset($_POST['is_online']) ? 1 : 0;
-  $place = trim($_POST['place'] ?? '');
+  $isOnline   = isset($_POST['is_online']) ? 1 : 0;
+  $place      = trim($_POST['place'] ?? '');
 
-  $noCost = isset($_POST['no_cost']) ? 1 : 0;
-  $amountRaw = str_replace(',', '', trim($_POST['amount'] ?? '0'));
-  $amount = $noCost ? 0.00 : (is_numeric($amountRaw) ? (float) $amountRaw : 0.00);
+  $noCost     = isset($_POST['no_cost']) ? 1 : 0;
+  $amountRaw  = str_replace(',', '', trim($_POST['amount'] ?? '0'));
+  $amount     = $noCost ? 0.00 : (is_numeric($amountRaw) ? (float)$amountRaw : 0.00);
 
-  $carUsed = isset($_POST['car_used']) ? 1 : 0;
-  $carPlate = trim($_POST['car_plate'] ?? '');
+  $carUsed    = isset($_POST['car_used']) ? 1 : 0;
+  $carPlate   = trim($_POST['car_plate'] ?? '');
 
-  $faculty = trim($_POST['faculty'] ?? '');
+  $faculty    = trim($_POST['faculty'] ?? '');
   $department = trim($_POST['department'] ?? '');
+  $headerText = trim($_POST['header_text'] ?? ''); // ✅ ใช้ค่าที่กรอกมาโดยตรง
+$docNo       = trim($_POST['doc_no'] ?? '');
+$docDateDisp = trim($_POST['doc_date_display'] ?? ''); 
 
   // ตรวจขั้นต่ำ
   $errors = [];
-  if ($docDate === '')
-    $errors['doc_date'] = 'required';
-  if ($purpose === '')
-    $errors['purpose'] = 'required';
-  if ($eventTitle === '')
-    $errors['event_title'] = 'required';
-  if ($dateOption === 'single' && $singleDate === '')
-    $errors['single_date'] = 'required';
-  if ($dateOption === 'range' && $rangeDate === '')
-    $errors['range_date'] = 'required';
-  if (!$isOnline && $place === '')
-    $errors['place'] = 'required';
-  if (!$noCost && !is_numeric($amountRaw))
-    $errors['amount'] = 'number';
-  if ($carUsed && $carPlate === '')
-    $errors['car_plate'] = 'required';
+  if ($docDate === '') $errors['doc_date'] = 'required';
+  if ($purpose === '') $errors['purpose'] = 'required';
+  if ($eventTitle === '') $errors['event_title'] = 'required';
+  if ($dateOption === 'single' && $singleDate === '') $errors['single_date'] = 'required';
+  if ($dateOption === 'range' && $rangeDate === '') $errors['range_date'] = 'required';
+  if (!$isOnline && $place === '') $errors['place'] = 'required';
+  if (!$noCost && !is_numeric($amountRaw)) $errors['amount'] = 'number';
+  if ($carUsed && $carPlate === '') $errors['car_plate'] = 'required';
 
   if (!empty($errors)) {
-    // กลับไปหน้า edit พร้อมข้อความง่าย ๆ (จะปรับเป็น querystring/flash ก็ได้)
     header('Location: edit_document.php?id=' . $documentId . '&err=validate');
-
     exit;
   }
 
   $pdo->beginTransaction();
 
-  // ดึงชื่อภาคและเบอร์โทร
-$q = $pdo->prepare("SELECT department_name, phone FROM departments WHERE department_id = :id LIMIT 1");
-$q->execute([':id' => $departmentId]);
-$row = $q->fetch(PDO::FETCH_ASSOC);
+  // อัปเดตหัวเอกสาร
+  $joinType = match ($purpose) {
+      'academic' => 'นำเสนอผลงานทางวิชาการ',
+      'training' => 'เข้ารับการฝึกอบรมหลักสูตร',
+      'meeting'  => 'เข้าร่วมประชุมวิชาการในงาน',
+      default    => 'อื่นๆ',
+  };
+  $subject = trim($joinType . $eventTitle);
 
-$deptWithPhone = '';
-if ($row) {
-    $deptWithPhone = $row['department_name'] . ' โทร. ' . $row['phone'];
-}
-
-  // อัปเดตหัวเอกสาร (อย่างน้อยวันที่)
-$joinType = match ($purpose) {
-    'academic' => 'นำเสนอผลงานทางวิชาการ',
-    'training' => 'เข้ารับการฝึกอบรมหลักสูตร',
-    'meeting'  => 'เข้าร่วมประชุมวิชาการในงาน',
-    default    => 'อื่นๆ',
-};
-$subject = trim($joinType . $eventTitle);
-
-// อัปเดตหัวเอกสาร
-$up = $pdo->prepare("
+ $up = $pdo->prepare("
     UPDATE documents 
-    SET doc_date = :doc_date, subject = :subject, updated_at = NOW() 
+    SET doc_no = :doc_no,
+        doc_date = :doc_date,
+        subject = :subject,
+        header_text = :header_text,
+        updated_at = NOW() 
     WHERE document_id = :id
 ");
 $up->execute([
-    ':doc_date' => $docDate,
-    ':subject'  => $subject,
-    ':id'       => $documentId
+    ':doc_no'     => $docNo,
+    ':doc_date'   => $docDate,
+    ':subject'    => $subject,
+    ':header_text'=> $headerText,
+    ':id'         => $documentId
 ]);
 
-  $values = [
-  1 => $docDate,
-  2 => $fullname,
-  3 => $position,
-  4 => $joinType,
-  5 => $eventTitle,
-  6 => ($dateOption === 'single') ? $singleDate : $rangeDate,
-  7 => $isOnline ? 'เข้าร่วมรูปแบบออนไลน์' : $place,
-  8 => number_format($amount, 2, '.', ''),
-  9 => $carUsed ? $carPlate : '',
-  10 => $faculty,
-  11 => $deptWithPhone,
-];
+  // ค่า field อื่น ๆ
+  $values = [ 
+    1 => $docDate,
+    2 => $fullname,
+    3 => $position,
+    4 => $joinType,
+    5 => $eventTitle,
+    6 => ($dateOption === 'single') ? $singleDate : $rangeDate,
+    7 => $isOnline ? 'เข้าร่วมรูปแบบออนไลน์' : $place,
+    8 => number_format($amount, 2, '.', ''),
+    9 => $carUsed ? $carPlate : '',
+    10 => $faculty,
+    11 => $department
+    // ❌ ไม่ต้องมี phone แยกแล้ว
+  ];
 
-  // อนุญาตเฉพาะ field_id ที่ template นี้มีจริง
   $q = $pdo->prepare("SELECT field_id FROM template_fields WHERE template_id = :tid");
   $q->execute([':tid' => $templateId]);
   $allowIds = array_flip($q->fetchAll(PDO::FETCH_COLUMN));
@@ -143,26 +131,24 @@ $up->execute([
         INSERT INTO document_values (document_id, field_id, value_text)
         VALUES (:document_id, :field_id, :value_text)
         ON DUPLICATE KEY UPDATE value_text = VALUES(value_text)
-    ");
+  ");
   foreach ($values as $fieldId => $val) {
-    if (!isset($allowIds[$fieldId]))
-      continue;
+    if (!isset($allowIds[$fieldId])) continue;
     $ins->execute([
       ':document_id' => $documentId,
-      ':field_id' => $fieldId,
-      ':value_text' => $val
+      ':field_id'    => $fieldId,
+      ':value_text'  => $val
     ]);
   }
 
   $pdo->commit();
 
-  // กลับหน้า edit เดิม
-  header('Location: edit_document.php?id=' . $documentId .  '&saved=1', true, 302);
-  exit;
+  header('Location: edit_document.php?id=' . $documentId . '&saved=1&from=update', true, 302);
+exit;
+
 
 } catch (Throwable $e) {
-  if (isset($pdo) && $pdo->inTransaction())
-    $pdo->rollBack();
+  if (isset($pdo) && $pdo->inTransaction()) $pdo->rollBack();
   if ($DEBUG_ERRORS) {
     echo 'server error: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
   } else {
