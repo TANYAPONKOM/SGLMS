@@ -222,114 +222,166 @@ if ($docDate && preg_match('/^\d{4}/', $docDate)) {
             display: none
         }
 
-        html,
         body {
-            margin: 0;
-            font-family: "Sarabun", sans-serif;
-            background: #f3f4f6;
+            background: #fff
         }
 
         .page {
-            width: 794px;
-            min-height: 1123px;
-            margin: 40px auto;
-            padding: 60px 70px 50px 100px;
-            background: #fff;
-            box-shadow: 0 0 5px rgba(0, 0, 0, .1);
-            position: relative;
-        }
-
-        .underlined {
-            position: relative;
-            display: flex;
-            align-items: flex-end;
-            padding-bottom: 6px;
-            min-height: 28px;
-            box-shadow: inset 0 -1px 0 #000;
-        }
-
-        .underlined .editable {
-            outline: none;
-            display: inline-block;
-            max-width: 100%;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-size: .92rem;
-            line-height: 1.25;
-            padding: 0 2px;
-        }
-
-        .thai-justify {
-            text-align: justify;
-            text-justify: inter-word;
-            word-break: break-word;
-            line-break: anywhere;
-            line-height: 1.9;
-            font-size: .92rem;
-        }
-
-        .content-block {
-            margin-left: 0;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .indent-first::before {
-            content: "";
-            display: inline-block;
-            width: 2.5cm;
+            margin: 0;
+            box-shadow: none
         }
 
         .chip {
-            display: inline;
-            padding: 0 .5em;
-            margin: 0 .18em;
-            background: #f9fafb;
-            border: 1px solid #d1d5db;
-            border-radius: 10px;
-            line-height: inherit;
-            white-space: normal;
-            word-break: break-word;
-            overflow-wrap: anywhere;
-            vertical-align: baseline;
             box-decoration-break: clone;
             -webkit-box-decoration-break: clone;
-            cursor: text;
         }
 
-        <<<<<<< HEAD .chip:hover {
-            border-color: #9ca3af;
-        }
+    }
 
-        .footer-actions {
-            margin-top: 24px;
-            padding-top: 16px;
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            border-top: 1px solid #e5e7eb;
-        }
+    .doc-header {
+        font-size: 16px;
+        line-height: 1.8;
+        margin-bottom: 15px;
+    }
 
-        @media print {
-            header {
-                display: none
-            }
+    .doc-row {
+        display: flex;
+        align-items: center;
+        /* ให้ label กับเส้น/กล่องอยู่บรรทัดเดียวกัน */
+        line-height: 1.5;
+        margin-bottom: 6px;
+    }
 
-            body {
-                background: #fff
-            }
+    .doc-label {
+        font-family: "TH SarabunPSK";
+        font-size: 20pt;
+        font-weight: bold;
+        margin-right: 6px;
+        white-space: nowrap;
+    }
 
-            .page {
-                margin: 0;
-                box-shadow: none
-            }
+    .dot-line {
+        position: relative;
+        flex: 1;
+        min-height: 28px;
+        display: flex;
+        align-items: center;
+    }
 
-            .chip {
-                box-decoration-break: clone;
-                -webkit-box-decoration-break: clone;
-            }
-        }
+    /* เส้นจุดต่อยาวทั้งบรรทัด */
+    .dot-line::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-bottom: 1px dotted #000;
+    }
+
+    .doc-row.agency-row .dot-input.box {
+        margin-left: 0;
+    }
+
+    .dot-input.box {
+        position: relative;
+        z-index: 1;
+        background: #fff;
+        border: 1px solid #444;
+        font-family: "TH SarabunPSK";
+        font-size: 16pt;
+        line-height: 1.0;
+        height: 28px;
+        padding: 0 8px;
+        margin-left: 8px;
+        /* ✅ ขยับกล่องทั่วไปไปทางขวา */
+        box-sizing: border-box;
+    }
+
+    .dot-line {
+        flex: 1;
+        border-bottom: 1px dotted #000;
+        display: flex;
+        align-items: center;
+        height: auto;
+        line-height: 1.0;
+    }
+
+    /* ฟอนต์ */
+    body {
+        font-family: "TH SarabunPSK", sans-serif;
+    }
+
+    /* หัวเรื่องใหญ่ */
+    h1 {
+        font-family: "TH SarabunPSK";
+        font-size: 29pt;
+        /* ขนาดหัวเรื่อง */
+        font-weight: bold;
+        text-align: flex-end;
+        margin-bottom: 1.5em;
+        flex-end line-height: 1.2;
+    }
+
+    .dot-input,
+    .thai-justify,
+    .content-block {
+        font-family: "TH SarabunPSK";
+        font-size: 16pt;
+        line-height: 1.0;
+        /* ✅ Single line spacing */
+    }
+
+
+    /* input แบบเต็มบรรทัด */
+    .dot-input.box.full {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .doc-row .dot-line {
+        flex: 1;
+        border-bottom: 1px dotted #000;
+        height: 28px;
+        display: flex;
+        align-items: center;
+    }
+
+    .dot-input {
+        border: 1px solid #444;
+        background: #fff;
+        font-family: "TH SarabunPSK";
+        font-size: 16pt;
+        line-height: 1.0;
+        padding: 0 6px;
+        height: auto;
+    }
+
+    .doc-title {
+        margin-left: -30px;
+    }
+
+    /* เลื่อนซ้าย “นิดหน่อย” */
+
+    .content-block.indent-first {
+        text-indent: 2.5cm;
+        /* ✅ ย่อหน้าไทย */
+        display: block;
+    }
+
+
+    @font-face {
+        font-family: 'TH SarabunPSK';
+        src: url('/fonts/THSarabunPSK.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    @font-face {
+        font-family: 'TH SarabunPSK';
+        src: url('/fonts/THSarabunPSK-Bold.ttf') format('truetype');
+        font-weight: bold;
+        font-style: normal;
+    }
     </style>
 </head>
 
@@ -348,515 +400,161 @@ if ($docDate && preg_match('/^\d{4}/', $docDate)) {
                 <div class="text-[16px] font-bold -mt-[2px]">Government</div>
                 <div class="text-[13px] mt-0">Letter Management System</div>
             </div>
-            =======
-            }
+        </div>
+        <div class="flex items-center space-x-4">
+            <a href="../home.html">
+                <div class="px-4 py-2 rounded-[11px] font-bold transition bg-white text-teal-500 shadow">หน้าหลัก</div>
+            </a>
+            <a href="form_Memo.html">
+                <div class="px-4 py-2 rounded-[11px] font-bold transition text-white">แบบฟอร์มบันทึกข้อความ</div>
+            </a>
+            <div class="bg-white text-teal-500 px-4 py-2 rounded-[11px] shadow flex items-center space-x-2">
+                <div class="text-right leading-tight">
+                    <div class="font-bold text-[14px]"><?= h($ownerName ?: 'ผู้ใช้งาน') ?></div>
+                    <div class="text-[12px]"><?= h($position ?: '') ?></div>
+                </div>
+                <div
+                    class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M5.121 17.804A13.937 13.937 0 0112 15c2.33 0 4.487.577 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </header>
 
-            .doc-header {
-            font-size: 16px;
-            line-height: 1.8;
-            margin-bottom: 15px;
-            }
+    <main class="page">
+        <!-- หัวบันทึก -->
+        <div style="display:flex; align-items:flex-end; justify-content:flex-start; gap:20px; margin-bottom:0.5em;">
+            <!-- ครุฑชิดซ้าย -->
+            <img src="https://i.pinimg.com/474x/bd/55/cc/bd55ccc4416012910a723da8f810658b.jpg"
+                style="height:1.5cm; width:auto;" />
 
-            .doc-row {
-            display: flex;
-            align-items: center;
-            /* ให้ label กับเส้น/กล่องอยู่บรรทัดเดียวกัน */
-            line-height: 1.5;
-            margin-bottom: 6px;
-            }
+            <h1 class="doc-title"
+                style="font-size:29pt;font-weight:bold;font-family:'TH SarabunPSK';line-height:1.0;text-align:center;flex:1;">
+                บันทึกข้อความ
+            </h1>
 
-            .doc-label {
-            font-family: "TH SarabunPSK";
-            font-size: 20pt;
-            font-weight: bold;
-            margin-right: 6px;
-            white-space: nowrap;
-            }
-
-            .dot-line {
-            position: relative;
-            flex: 1;
-            min-height: 28px;
-            display: flex;
-            align-items: center;
-            }
-
-            /* เส้นจุดต่อยาวทั้งบรรทัด */
-            .dot-line::after {
-            content: "";
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border-bottom: 1px dotted #000;
-            }
-
-            .doc-row.agency-row .dot-input.box {
-            margin-left: 0;
-            }
-
-            .dot-input.box {
-            position: relative;
-            z-index: 1;
-            background: #fff;
-            border: 1px solid #444;
-            font-family: "TH SarabunPSK";
-            font-size: 16pt;
-            line-height: 1.0;
-            height: 28px;
-            padding: 0 8px;
-            margin-left: 8px;
-            /* ✅ ขยับกล่องทั่วไปไปทางขวา */
-            box-sizing: border-box;
-            }
-
-            .dot-line {
-            flex: 1;
-            border-bottom: 1px dotted #000;
-            display: flex;
-            align-items: center;
-            height: auto;
-            line-height: 1.0;
-            }
-
-            /* ฟอนต์ */
-            body {
-            font-family: "TH SarabunPSK", sans-serif;
-            }
-
-            /* หัวเรื่องใหญ่ */
-            h1 {
-            font-family: "TH SarabunPSK";
-            font-size: 29pt;
-            /* ขนาดหัวเรื่อง */
-            font-weight: bold;
-            text-align: flex-end;
-            margin-bottom: 1.5em;
-            flex-end line-height: 1.2;
-            }
-
-            .dot-input,
-            .thai-justify,
-            .content-block {
-            font-family: "TH SarabunPSK";
-            font-size: 16pt;
-            line-height: 1.0;
-            /* ✅ Single line spacing */
-            }
-
-
-            /* input แบบเต็มบรรทัด */
-            .dot-input.box.full {
-            width: 100%;
-            box-sizing: border-box;
-            }
-
-            .doc-row .dot-line {
-            flex: 1;
-            border-bottom: 1px dotted #000;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            }
-
-            .dot-input {
-            border: 1px solid #444;
-            background: #fff;
-            font-family: "TH SarabunPSK";
-            font-size: 16pt;
-            line-height: 1.0;
-            padding: 0 6px;
-            height: auto;
-            }
-
-            .doc-title {
-            margin-left: -30px;
-            }
-
-            /* เลื่อนซ้าย “นิดหน่อย” */
-
-            .content-block.indent-first {
-            text-indent: 2.5cm;
-            /* ✅ ย่อหน้าไทย */
-            display: block;
-            }
-
-
-            @font-face {
-            font-family: 'TH SarabunPSK';
-            src: url('/fonts/THSarabunPSK.ttf') format('truetype');
-            font-weight: normal;
-            font-style: normal;
-            }
-
-            @font-face {
-            font-family: 'TH SarabunPSK';
-            src: url('/fonts/THSarabunPSK-Bold.ttf') format('truetype');
-            font-weight: bold;
-            font-style: normal;
-            }
-            </style>
-            </head>
-
-            <body>
-                <header class="bg-teal-500 text-white p-4 flex justify-between items-center shadow-md">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-[56px] h-[56px] flex items-center justify-center relative overflow-visible">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="absolute scale-[1.4] text-white"
-                                style="width:60px;height:60px" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
-                                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m0 0a2 2 0 00-2-2H5a2 2 0 00-2 2m18 0v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8" />
-                            </svg>
-                        </div>
-                        <div class="leading-tight">
-                            <div class="text-[16px] font-bold">Smart</div>
-                            <div class="text-[16px] font-bold -mt-[2px]">Government</div>
-                            <div class="text-[13px] mt-0">Letter Management System</div>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <a href="../home.html">
-                            <div class="px-4 py-2 rounded-[11px] font-bold transition bg-white text-teal-500 shadow">
-                                หน้าหลัก</div>
-                        </a>
-                        <a href="form_Memo.html">
-                            <div class="px-4 py-2 rounded-[11px] font-bold transition text-white">แบบฟอร์มบันทึกข้อความ
-                            </div>
-                        </a>
-                        <div class="bg-white text-teal-500 px-4 py-2 rounded-[11px] shadow flex items-center space-x-2">
-                            <div class="text-right leading-tight">
-                                <div class="font-bold text-[14px]"><?= h($ownerName ?: 'ผู้ใช้งาน') ?></div>
-                                <div class="text-[12px]"><?= h($position ?: '') ?></div>
-                                >>>>>>> 168179fd187767678f4927e06cbd0dfa309f8eec
-                            </div>
-                            <div class="flex items-center space-x-4">
-                                <a href="../home.html">
-                                    <div
-                                        class="px-4 py-2 rounded-[11px] font-bold transition bg-white text-teal-500 shadow">
-                                        หน้าหลัก</div>
-                                </a>
-                                <a href="form_Memo.html">
-                                    <div class="px-4 py-2 rounded-[11px] font-bold transition text-white">
-                                        แบบฟอร์มบันทึกข้อความ</div>
-                                </a>
-                                <div
-                                    class="bg-white text-teal-500 px-4 py-2 rounded-[11px] shadow flex items-center space-x-2">
-                                    <div class="text-right leading-tight">
-                                        <div class="font-bold text-[14px]"><?=h($ownerName ?: 'ผู้ใช้งาน')?></div>
-                                        <div class="text-[12px]"><?=h($position ?: '')?></div>
-                                    </div>
-                                    <div
-                                        class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
-                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M5.121 17.804A13.937 13.937 0 0112 15c2.33 0 4.487.577 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        </svg>
-                                    </div>
-                                </div>
-                            </div>
-                </header>
-
-                <<<<<<< HEAD <main class="page">
-                    <div class="relative mb-5 h-[84px]">
-                        <img src="https://i.pinimg.com/474x/bd/55/cc/bd55ccc4416012910a723da8f810658b.jpg"
-                            alt="ตราครุฑ (ลายเส้น)" class="absolute left-0 top-1/2 -translate-y-1/2"
-                            style="height:70px;width:auto" />
-                        <h1 class="absolute inset-0 flex items-center justify-center font-bold text-2xl">บันทึกข้อความ
-                        </h1>
-                    </div>
-
-                    <!-- ส่วนหัว -->
-                    <div class="mb-2 text-[16px]">
-                        <div class="flex mb-1.5">
-                            <span class="w-[96px] font-bold">ส่วนราชการ</span>
-                            <span class="flex-1 underlined"><span class="editable"
-                                    contenteditable="true"><?=h($hdr_agency)?> โทร.
-                                    ....</span></span>
-                        </div>
-                        <div class="flex mb-1.5">
-                            <span class="w-[96px] font-bold">ที่</span>
-                            <span class="flex-1 underlined"><span class="editable"
-                                    contenteditable="true"><?=h($document['doc_no'] ?: '—')?></span></span>
-                            <span class="ml-4 w-[50px] font-bold">วันที่</span>
-                            <span class="flex-1 underlined"><span class="editable"
-                                    contenteditable="true"><?=h($thaiDocDate ?: '')?></span></span>
-                        </div>
-                        <div class="flex mb-1.5">
-                            <span class="w-[96px] font-bold">เรื่อง</span>
-                            <span class="flex-1 underlined"><span class="editable"
-                                    contenteditable="true"><?=h($hdr_subject)?></span></span>
-                        </div>
-                        <div class="flex">
-                            <span class="w-[96px]">เรียน</span>
-                            <span class="flex-1 underlined"><span class="editable"
-                                    contenteditable="true"><?=h($hdr_to)?></span></span>
-                        </div>
-                    </div>
-
-                    <!-- เนื้อหา -->
-                    <div class="content-block thai-justify indent-first mb-3">
-                        ตามที่ สมาคมสหกิจศึกษาไทย กำหนดจัดอบรมหลักสูตร
-                        <span contenteditable="true" class="chip"><?=h($courseName ?: 'ชื่อหลักสูตร')?></span>
-                        ระหว่างวันที่
-                        <span contenteditable="true" class="chip"><?=h($joinDates ?: '')?></span>
-                        ณ
-                        <span contenteditable="true" class="chip"><?=h($location ?: '')?></span>
-                        นั้น ซึ่งหลักสูตรดังกล่าวเป็นประโยชน์ต่อการพัฒนาระบบการจัดการเรียนการสอนในรูปแบบสหกิจศึกษา
-                    </div>
-
-                    <div class="content-block thai-justify indent-first mb-3">
-                        การนี้ ข้าพเจ้า
-                        <span contenteditable="true"
-                            class="chip"><?=h(($ownerName?:'ชื่อ-นามสกุล').' '.($position?:''))?></span>
-                        สังกัดภาควิชา<?=h($department ?: '................')?> คณะ<?=h($faculty ?: '................')?>
-                        มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ
-                        วิทยาเขตปราจีนบุรี จึงมีความประสงค์ที่จะขออนุมัติตัวบุคคลเข้ารับการอบรมหลักสูตร
-                        <span contenteditable="true" class="chip"><?=h($courseName ?: 'ชื่อหลักสูตร')?></span>
-                        ระหว่างวันที่
-                        <span contenteditable="true" class="chip"><?=h($joinDates ?: '')?></span>
-                        ณ
-                        <span contenteditable="true" class="chip"><?=h($location ?: '')?></span>
-                        วงเงินทั้งสิ้น
-                        <span contenteditable="true" class="chip"><?=h($prettyAmount ?: '')?></span>
-                        บาท โดยขอใช้แหล่งเงินจัดสรรให้หน่วยงาน ประจำปีงบประมาณ
-                        <span contenteditable="true"
-                            class="chip"><?=h($thaiYear ? 'พ.ศ. '.$thaiYear : 'พ.ศ. ....')?></span>
-                        ในส่วนของภาควิชา<?=h($department ?: '................')?> แผนงานจัดการศึกษาระดับอุดมศึกษา
-                        กองทุนพัฒนาบุคลากร
-                        หมวดค่าใช้สอย (รายละเอียดตามเอกสารแนบ)
-                    </div>
-
-                    <div class="content-block thai-justify">
-                        จึงเรียนมาเพื่อโปรดพิจารณาอนุมัติ และจะได้ดำเนินการต่อไป
-                    </div>
-
-                    <!-- ลายเซ็น -->
-                    <div class="text-right mt-10 text-[16px]">
-                        (<?=h($ownerName ?: '')?>)<br /><?=h($position ?: '')?>
-                    </div>
-                    <div class="mt-10 text-[16px]">เรียน <?=h($hdr_to)?><br />เพื่อโปรดพิจารณาอนุมัติ</div>
-                    <div class="mt-12 text-left text-[16px]">(ผู้ช่วยศาสตราจารย์ ดร.
-                        ................................)<br />หัวหน้าภาควิชา<?=h($department ?: '................')?>
-                    </div>
-
-                    <div class="footer-actions">
-                        <button class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md"
-                            onclick="window.print()">พิมพ์/ตัวอย่าง</button>
-                        <a class="bg-teal-500 hover:bg-teal-600 text-white px-6 py-2 rounded-md"
-                            href="../user/form_Memo.html">ยืนยัน</a>
-                    </div>
-                    </main>
-
-                    <script>
-                    // กันขึ้นบรรทัดใหม่เฉพาะหัวเอกสาร/ชิป
-                    document.querySelectorAll('.editable[contenteditable], .chip[contenteditable]').forEach(el => {
-                                el.addEventListener('keydown', e => {
-                                    if (e.key === 'Enter') e.preventDefault();
-                                });
-                                el.addEventListener('paste', e => {
-                                    e.preventDefault();
-                                    const text = (e.clipboardData || window.clipboardData).getData('text')
-                                        .replace(/\r?\n/g,
-                                            ' ');
-                                    document.execCommand('insertText', false, text);
-                                }); ===
-                                === = <
-                                main class = "page" >
-                                    <
-                                    !--หั วบั นทึก-- >
-                                    <
-                                    div style =
-                                    "display:flex; align-items:flex-end; justify-content:flex-start; gap:20px; margin-bottom:0.5em;" >
-                                    <
-                                    !--ครุฑชิดซ้ าย-- >
-                                    <
-                                    img src = "https://i.pinimg.com/474x/bd/55/cc/bd55ccc4416012910a723da8f810658b.jpg"
-                                style = "height:1.5cm; width:auto;" / >
-
-                                    <
-                                    h1 class = "doc-title"
-                                style =
-                                    "font-size:29pt;font-weight:bold;font-family:'TH SarabunPSK';line-height:1.0;text-align:center;flex:1;" >
-                                    บั นทึกข้ อความ <
-                                    /h1>
-
-                                    <
-                                    /div>
+        </div>
 
 
 
-                                    <
-                                    !--ส่ วนหั ว-- >
-                                    <
-                                    div class = "doc-header"
-                                style = "margin-top:5px;" >
-                                    <
-                                    !--ส่ วนราชการ-- >
-                                    <
-                                    div class = "doc-row" >
-                                    <
-                                    div class = "doc-label"
-                                style = "font-size:20pt; font-family:'TH SarabunPSK'; font-weight:bold;" >
-                                    ส่ วนราชการ <
-                                    /div> <
-                                    div class = "dot-line" >
-                                    <
-                                    input type = "text"
-                                class = "dot-input box full"
-                                style = "font-size:16pt; font-family:'TH SarabunPSK';"
-                                value = "คณะเทคโนโลยีและการจัดการอุตสาหกรรม ภาควิชาเทคโนโลยีสารสนเทศ โทร. 7064" / >
-                                    <
-                                    /div> <
-                                    /div>
+        <!-- ส่วนหัว -->
+        <div class="doc-header" style="margin-top:5px;">
+            <!-- ส่วนราชการ -->
+            <div class="doc-row">
+                <div class="doc-label" style="font-size:20pt; font-family:'TH SarabunPSK'; font-weight:bold;">
+                    ส่วนราชการ
+                </div>
+                <div class="dot-line">
+                    <input type="text" class="dot-input box full" style="font-size:16pt; font-family:'TH SarabunPSK';"
+                        value="คณะเทคโนโลยีและการจัดการอุตสาหกรรม ภาควิชาเทคโนโลยีสารสนเทศ โทร. 7064" />
+                </div>
+            </div>
 
-                                    <
-                                    !--ที่ + วั นที่-- >
-                                    <
-                                    div class = "doc-row" >
-                                    <
-                                    div class = "doc-label"
-                                style = "font-size:20pt; font-family:'TH SarabunPSK'; font-weight:bold;" >
-                                    ที่ <
-                                    /div> <
-                                    div class = "dot-line"
-                                style = "max-width:260px;" >
-                                    <
-                                    input type = "text"
-                                class = "dot-input box"
-                                style = "font-size:16pt; font-family:'TH SarabunPSK';"
-                                value = "ทส. พิเศษ.486/2567" / >
-                                    <
-                                    /div> <
-                                    div class = "doc-label"
-                                style =
-                                    "margin-left:20px; font-size:20pt; font-family:'TH SarabunPSK'; font-weight:bold;" >
-                                    วั นที่ <
-                                    /div> <
-                                    div class = "dot-line" >
-                                    <
-                                    input type = "text"
-                                class = "dot-input box"
-                                style = "font-size:16pt; font-family:'TH SarabunPSK';"
-                                value = "20 กันยายน 2568" / >
-                                    <
-                                    /div> <
-                                    /div>
+            <!-- ที่ + วันที่ -->
+            <div class="doc-row">
+                <div class="doc-label" style="font-size:20pt; font-family:'TH SarabunPSK'; font-weight:bold;">
+                    ที่
+                </div>
+                <div class="dot-line" style="max-width:260px;">
+                    <input type="text" class="dot-input box" style="font-size:16pt; font-family:'TH SarabunPSK';"
+                        value="ทส. พิเศษ.486/2567" />
+                </div>
+                <div class="doc-label"
+                    style="margin-left:20px; font-size:20pt; font-family:'TH SarabunPSK'; font-weight:bold;">
+                    วันที่
+                </div>
+                <div class="dot-line">
+                    <input type="text" class="dot-input box" style="font-size:16pt; font-family:'TH SarabunPSK';"
+                        value="20 กันยายน 2568" />
+                </div>
+            </div>
 
-                                    <
-                                    !--เรื่ อง-- >
-                                    <
-                                    div class = "doc-row" >
-                                    <
-                                    div class = "doc-label"
-                                style = "font-size:20pt; font-family:'TH SarabunPSK'; font-weight:bold;" >
-                                    เรื่ อง <
-                                    /div> <
-                                    div class = "dot-line" >
-                                    <
-                                    input type = "text"
-                                class = "dot-input box"
-                                style = "font-size:16pt; font-family:'TH SarabunPSK';"
-                                value = "เข้ารับการฝึกอบรมหลักสูตร" / >
-                                    <
-                                    /div> <
-                                    /div> <
-                                    /div> <
-                                    main >
-                                    <
-                                    !--ย่ อหน้ า "เรียน"-- >
-                                    <
-                                    div class = "content-block single" >
-                                    เรียน คณบดีคณะเทคโนโลยีและการจั ดการอุตสาหกรรม <
-                                    /div>
+            <!-- เรื่อง -->
+            <div class="doc-row">
+                <div class="doc-label" style="font-size:20pt; font-family:'TH SarabunPSK'; font-weight:bold;">
+                    เรื่อง
+                </div>
+                <div class="dot-line">
+                    <input type="text" class="dot-input box" style="font-size:16pt; font-family:'TH SarabunPSK';"
+                        value="เข้ารับการฝึกอบรมหลักสูตร" />
+                </div>
+            </div>
+        </div>
+        <main>
+            <!-- ย่อหน้า "เรียน" -->
+            <div class="content-block single">
+                เรียน คณบดีคณะเทคโนโลยีและการจัดการอุตสาหกรรม
+            </div>
 
-                                    <
-                                    div class = "content-block paragraph" >
-                                    ตามที่ สมาคมสหกิจศึกษาไทย กำหนดจั ดอบรมหลั กสูตร <
-                                    span class = "chip" > <?= h($courseName ?: 'ชื่อหลักสูตร') ?> < /span>
-                                ระหว่ างวั นที่ < span class = "chip" > <?= h($joinDates ?: '...') ?> < /span>
-                                ณ < span class = "chip" > <?= h($location ?: '...') ?> < /span> นั้น
-                                ซึ่ งหลั กสูตรดั งกล่ าวเป็ นประโยชน์ ต่ อการพั ฒนาทั้ งกระบวนการจั ดการเรียนการสอนในรูปแบบสหกิจศึกษา
-                                    <
-                                    /div>
+            <div class="content-block paragraph">
+                ตามที่ สมาคมสหกิจศึกษาไทย กำหนดจัดอบรมหลักสูตร
+                <span class="chip"><?= h($courseName ?: 'ชื่อหลักสูตร') ?></span>
+                ระหว่างวันที่ <span class="chip"><?= h($joinDates ?: '...') ?></span>
+                ณ <span class="chip"><?= h($location ?: '...') ?></span> นั้น
+                ซึ่งหลักสูตรดังกล่าวเป็นประโยชน์ต่อการพัฒนาทั้งกระบวนการจัดการเรียนการสอนในรูปแบบสหกิจศึกษา
+            </div>
 
-                                    <
-                                    !--ย่ อหน้ าที่ สอง-- >
-                                    <
-                                    div class = "content-block paragraph" >
-                                    การนี้ ข้ าพเจ้ า <
-                                    span class = "chip" >
-                                    <?= h(($ownerName ?: 'ชื่อ-นามสกุล') . ' ' . ($position ?: '')) ?> < /span>
-                                สั งกั ดภาควิชา<?= h($department ?: '................') ?> คณะ<?= h($faculty ?: '................') ?>
-                                มหาวิทยาลั ยเทคโนโลยีพระจอมเกล้ าพระนครเหนือ
-                                วิทยาเขตปราจีนบุรี จึงมีความประสงค์ ที่ จะขออนุมั ติตั วบุคคลเข้ ารั บการอบรมหลั กสูตร
-                                    <
-                                    span class = "chip" > <?= h($courseName ?: 'ชื่อหลักสูตร') ?> < /span>
-                                ระหว่ างวั นที่ < span class = "chip" > <?= h($joinDates ?: '') ?> < /span>
-                                ณ < span class = "chip" > <?= h($location ?: '') ?> < /span>
-                                วงเงินทั้ งสิ้ น < span class = "chip" > <?= h($prettyAmount ?: '') ?> < /span> บาท
-                                โดยขอใช้ แหล่ งเงินจั ดสรรให้ หน่ วยงาน ประจำปีงบประมาณ
-                                    <
-                                    span class = "chip" > <?= h($thaiYear ? 'พ.ศ. ' . $thaiYear : 'พ.ศ. ....') ?> <
-                                    /span>
-                                ในส่ วนของภาควิชา<?= h($department ?: '................') ?> แผนงานจั ดการศึกษาระดั บอุดมศึกษา
-                                กองทุนพั ฒนาบุคลากร หมวดค่ าใช้ สอย(รายละเอียดตามเอกสารแนบ) <
-                                    /div>
+            <!-- ย่อหน้าที่สอง -->
+            <div class="content-block paragraph">
+                การนี้ ข้าพเจ้า
+                <span class="chip"><?= h(($ownerName ?: 'ชื่อ-นามสกุล') . ' ' . ($position ?: '')) ?></span>
+                สังกัดภาควิชา<?= h($department ?: '................') ?> คณะ<?= h($faculty ?: '................') ?>
+                มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ
+                วิทยาเขตปราจีนบุรี จึงมีความประสงค์ที่จะขออนุมัติตัวบุคคลเข้ารับการอบรมหลักสูตร
+                <span class="chip"><?= h($courseName ?: 'ชื่อหลักสูตร') ?></span>
+                ระหว่างวันที่ <span class="chip"><?= h($joinDates ?: '') ?></span>
+                ณ <span class="chip"><?= h($location ?: '') ?></span>
+                วงเงินทั้งสิ้น <span class="chip"><?= h($prettyAmount ?: '') ?></span> บาท
+                โดยขอใช้แหล่งเงินจัดสรรให้หน่วยงาน ประจำปีงบประมาณ
+                <span class="chip"><?= h($thaiYear ? 'พ.ศ. ' . $thaiYear : 'พ.ศ. ....') ?></span>
+                ในส่วนของภาควิชา<?= h($department ?: '................') ?> แผนงานจัดการศึกษาระดับอุดมศึกษา
+                กองทุนพัฒนาบุคลากร หมวดค่าใช้สอย (รายละเอียดตามเอกสารแนบ)
+            </div>
 
-                                    <
-                                    div class = "content-block thai-justify" >
-                                    จึงเรียนมาเพื่ อโปรดพิจารณาอนุมั ติ และจะได้ ดำเนินการต่ อไป <
-                                    /div>
+            <div class="content-block thai-justify">
+                จึงเรียนมาเพื่อโปรดพิจารณาอนุมัติ และจะได้ดำเนินการต่อไป
+            </div>
 
-                                    <
-                                    !--ลายเซ็ น-- >
-                                    <
-                                    div class = "text-right mt-10"
-                                style = "font-family:'TH SarabunPSK'; font-size:16pt; line-height:1.2;" >
-                                    (<?= h($ownerName ?: '') ?>) < br / > <?= h($position ?: '') ?> <
-                                    /div>
+            <!-- ลายเซ็น -->
+            <div class="text-right mt-10" style="font-family:'TH SarabunPSK'; font-size:16pt; line-height:1.2;">
+                (<?= h($ownerName ?: '') ?>)<br /><?= h($position ?: '') ?>
+            </div>
 
-                                    <
-                                    div class = "mt-10"
-                                style = "font-family:'TH SarabunPSK'; font-size:16pt; line-height:1.2;" >
-                                    เรียน <?= h($hdr_to) ?> < br / > เพื่ อโปรดพิจารณาอนุมั ติ <
-                                    /div>
+            <div class="mt-10" style="font-family:'TH SarabunPSK'; font-size:16pt; line-height:1.2;">
+                เรียน <?= h($hdr_to) ?><br />เพื่อโปรดพิจารณาอนุมัติ
+            </div>
 
-                                    <
-                                    div class = "mt-12 text-left"
-                                style = "font-family:'TH SarabunPSK'; font-size:16pt; line-height:1.2;" >
-                                    (ผู้ ช่ วยศาสตราจารย์ ดร.................................) < br / >
-                                    หั วหน้ าภาควิชา<?= h($department ?: '................') ?> <
-                                    /div>
+            <div class="mt-12 text-left" style="font-family:'TH SarabunPSK'; font-size:16pt; line-height:1.2;">
+                (ผู้ช่วยศาสตราจารย์ ดร. ................................)<br />
+                หัวหน้าภาควิชา<?= h($department ?: '................') ?>
+            </div>
 
-                                    <
-                                    div class = "footer-actions"
-                                style = "font-family:'TH SarabunPSK'; font-size:16pt; " >
-                                    <
-                                    button class = "bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md"
-                                onclick = "window.print()" > พิมพ์ / ตั วอย่ าง < /button> <
-                                    a class = "bg-teal-500 hover:bg-teal-600 text-white px-6 py-2 rounded-md"
-                                href = "../user/form_Memo.html" > ยืนยั น < /a> <
-                                    /div> <
-                                    /main>
+            <div class="footer-actions" style="font-family:'TH SarabunPSK'; font-size:16pt; ">
+                <button class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md"
+                    onclick="window.print()">พิมพ์/ตัวอย่าง</button>
+                <a class="bg-teal-500 hover:bg-teal-600 text-white px-6 py-2 rounded-md"
+                    href="../user/form_Memo.html">ยืนยัน</a>
+            </div>
+        </main>
 
-                                    <
-                                    script >
-                                    // กันขึ้นบรรทัดใหม่เฉพาะหัวเอกสาร/ชิป
-                                    document.querySelectorAll('.editable[contenteditable], .chip[contenteditable]')
-                                    .forEach(el => {
-                                        el.addEventListener('keydown', e => {
-                                            if (e.key === 'Enter') e.preventDefault();
-                                        });
-                                        el.addEventListener('paste', e => {
-                                            e.preventDefault();
-                                            const text = (e.clipboardData || window.clipboardData).getData(
-                                                'text').replace(/\r?\n/g, ' ');
-                                            document.execCommand('insertText', false, text);
-                                        }); >>>
-                                        >>> > 168179 fd187767678f4927e06cbd0dfa309f8eec
-                                    });
-                    </script>
-            </body>
+        <script>
+        // กันขึ้นบรรทัดใหม่เฉพาะหัวเอกสาร/ชิป
+        document.querySelectorAll('.editable[contenteditable], .chip[contenteditable]').forEach(el => {
+            el.addEventListener('keydown', e => {
+                if (e.key === 'Enter') e.preventDefault();
+            });
+            el.addEventListener('paste', e => {
+                e.preventDefault();
+                const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\r?\n/g,
+                    ' ');
+                document.execCommand('insertText', false, text);
+            });
+        });
+        </script>
+</body>
 
 </html>

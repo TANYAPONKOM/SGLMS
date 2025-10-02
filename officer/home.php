@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>รายการส่งคำขอ</title>
+    <title>ประวัติการสร้างและแก้ไขเอกสาร</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
     html,
@@ -95,16 +95,35 @@
 
     <!-- Content -->
     <main class="max-w-7xl w-full px-8 mx-auto bg-white mt-4 mb-12 p-6 rounded shadow min-h-[85vh]">
-        <h2 class="text-xl font-bold mb-4">รายการส่งคำขอ</h2>
+        <h2 class="text-xl font-bold mb-4">ประวัติการสร้างและแก้ไขเอกสาร</h2>
 
         <!-- Tabs -->
-        <div class="flex space-x-6 border-b mb-4">
-            <button id="tab-pending" class="bg-teal-500 text-white px-4 py-2 rounded-t-md font-semibold">
-                ส่งคำขอ
-            </button>
-            <button id="tab-done" class="text-gray-500 px-4 py-2 rounded-t-md font-semibold">
-                เสร็จสิ้น
-            </button>
+        <div class="flex items-center border-b mb-4">
+            <!-- ปุ่มแท็บ -->
+            <div class="flex space-x-6">
+                <button id="tab-pending" class="bg-teal-500 text-white px-4 py-2 rounded-t-md font-semibold">
+                    รอตรวจสอบ
+                </button>
+                <button id="tab-done" class="text-gray-500 px-4 py-2 rounded-t-md font-semibold">
+                    อนุมัติแล้ว
+                </button>
+                <button id="tab-rejected" class="text-gray-500 px-4 py-2 rounded-t-md font-semibold">
+                    ถูกตีกลับ
+                </button>
+            </div>
+
+            <!-- ฟอร์มเลือกช่วงวัน (ดันไปชิดขวา) -->
+            <form method="get" class="flex space-x-2 items-center ml-auto">
+                <label class="text-sm text-gray-600">ช่วงวันที่:</label>
+                <input type="date" name="date_from" value="<?= htmlspecialchars($_GET['date_from'] ?? '') ?>"
+                    class="border rounded px-2 py-1 text-sm">
+                <input type="date" name="date_to" value="<?= htmlspecialchars($_GET['date_to'] ?? '') ?>"
+                    class="border rounded px-2 py-1 text-sm">
+                <button type="submit"
+                    class="bg-teal-500 text-white px-3 py-1 rounded text-sm hover:bg-teal-600 transition">
+                    ค้นหา
+                </button>
+            </form>
         </div>
 
         <!-- Filter + Sort -->
@@ -186,6 +205,12 @@
             date: "2025-06-27",
             status: "pending",
         },
+        {
+            title: "เอกสารถูกตีกลับเนื่องจากข้อมูลไม่ครบ",
+            date: "2025-07-15",
+            status: "rejected"
+        }
+
     ];
 
     let currentPage = 1;
@@ -200,6 +225,35 @@
     const sortIcon = document.getElementById("sortIcon");
     const tabPending = document.getElementById("tab-pending");
     const tabDone = document.getElementById("tab-done");
+    const tabRejected = document.getElementById("tab-rejected");
+
+    // อัปเดตฟังก์ชันเปลี่ยน tab
+    function setActiveTab(tab) {
+        activeTab = tab;
+        currentPage = 1;
+
+        // reset class ทุก tab
+        [tabPending, tabDone, tabRejected].forEach(btn => {
+            btn.classList.remove("bg-teal-500", "text-white");
+            btn.classList.add("text-gray-500");
+        });
+
+        // active tab ที่เลือก
+        if (tab === "pending") {
+            tabPending.classList.add("bg-teal-500", "text-white");
+        } else if (tab === "done") {
+            tabDone.classList.add("bg-teal-500", "text-white");
+        } else if (tab === "rejected") {
+            tabRejected.classList.add("bg-teal-500", "text-white");
+        }
+
+        renderList();
+    }
+
+    // bind event
+    tabPending.onclick = () => setActiveTab("pending");
+    tabDone.onclick = () => setActiveTab("done");
+    tabRejected.onclick = () => setActiveTab("rejected");
 
     function formatDate(iso) {
         const date = new Date(iso);
@@ -224,16 +278,25 @@
         requestList.innerHTML = shown
             .map(
                 (req) => `
-        <div class="bg-gray-50 p-4 rounded-xl shadow flex justify-between items-start">
-          <div>
-            <div class="font-semibold text-gray-800">${req.title}</div>
-            <div class="text-sm text-gray-500 mt-1">${detail}</div>
-          </div>
-          <div class="text-right text-sm text-gray-600">
-            <div>${formatDate(req.date)}</div>
-            <div class="mt-2 flex justify-end space-x-2">
-             <a href="#" class="text-blue-500 flex items-center space-x-1"><img src="https://cdn-icons-png.flaticon.com/16/281/281760.png" alt="Word"> <span>Word</span></a>
-            <a href="#" class="text-red-500 flex items-center space-x-1"><img src="https://cdn-icons-png.flaticon.com/16/337/337946.png" alt="PDF"> <span>PDF</span></a>
+<a href="document_info.php" class="block">
+  <div class="bg-gray-50 p-4 rounded-xl shadow flex justify-between items-start hover:bg-gray-100 transition cursor-pointer">
+    <div>
+      <div class="font-semibold text-gray-800">${req.title}</div>
+      <div class="text-sm text-gray-500 mt-1">${detail}</div>
+    </div>
+    <div class="text-right text-sm text-gray-600">
+      <div>${formatDate(req.date)}</div>
+      <div class="mt-2 flex justify-end space-x-2">
+        <a href="#" onclick="event.stopPropagation()" class="text-blue-500 flex items-center space-x-1">
+          <img src="https://cdn-icons-png.flaticon.com/16/281/281760.png" alt="Word"> <span>Word</span>
+        </a>
+        <a href="#" onclick="event.stopPropagation()" class="text-red-500 flex items-center space-x-1">
+          <img src="https://cdn-icons-png.flaticon.com/16/337/337946.png" alt="PDF"> <span>PDF</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</a>
           </div>
             </div>
           </div>
@@ -274,22 +337,6 @@
 
     itemsPerPageEl.onchange = () => {
         itemsPerPage = parseInt(itemsPerPageEl.value);
-        currentPage = 1;
-        renderList();
-    };
-
-    tabPending.onclick = () => {
-        activeTab = "pending";
-        tabPending.classList.add("bg-teal-500", "text-white");
-        tabDone.classList.remove("bg-teal-500", "text-white");
-        currentPage = 1;
-        renderList();
-    };
-
-    tabDone.onclick = () => {
-        activeTab = "done";
-        tabDone.classList.add("bg-teal-500", "text-white");
-        tabPending.classList.remove("bg-teal-500", "text-white");
         currentPage = 1;
         renderList();
     };
