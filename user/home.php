@@ -144,59 +144,29 @@ if (!isset($_SESSION['user_id'])) {
     </main>
 
     <script>
-    const detail =
-        "“คณาจารย์นิเทศ CWIE สำหรับผู้ที่ ไม่เคยอบรม (ฉบับปรับปรุง พ.ศ. 2566)” รุ่นที่ 1";
-    const dataAll = [{
-            title: "ขออนุมัติไปเข้ารับการฝึกอบรมหลักสูตร",
-            date: "2025-07-01",
-            status: "pending",
-        },
-        {
-            title: "ขออนุมัติค่าใช้จ่ายในการอบรม",
-            date: "2025-07-25",
-            status: "pending",
-        },
-        {
-            title: "ขออนุมัติใช้รถยนต์ส่วนบุคคล",
-            date: "2025-07-03",
-            status: "pending",
-        },
-        {
-            title: "ประมาณการค่าใช้จ่าย",
-            date: "2025-07-17",
-            status: "pending"
-        },
-        {
-            title: "ขออนุมัติเข้าร่วมสัมมนาวิชาการ",
-            date: "2025-07-16",
-            status: "done",
-        },
-        {
-            title: "ขออนุมัติใช้สถานที่ราชการ",
-            date: "2025-06-29",
-            status: "done",
-        },
-        {
-            title: "ขออนุมัติจัดโครงการอบรม",
-            date: "2025-07-05",
-            status: "done",
-        },
-        {
-            title: "แจ้งผลการดำเนินโครงการ",
-            date: "2025-06-30",
-            status: "done"
-        },
-        {
-            title: "เสนอรายงานค่าใช้จ่ายเพิ่มเติม",
-            date: "2025-07-21",
-            status: "pending",
-        },
-        {
-            title: "ขออนุมัติเบิกเงินสำรองจ่าย",
-            date: "2025-06-27",
-            status: "pending",
-        },
-    ];
+    let dataAll = []; // เก็บข้อมูลที่ fetch มา
+
+    async function loadRequests() {
+        const res = await fetch("get_requests.php");
+        const data = await res.json();
+
+        dataAll = data.map(d => ({
+            document_id: d.document_id, // 🟢 เพิ่มอันนี้
+            title: d.join_type || "(ไม่มีชื่อเรื่อง)",
+            detail: d.course_name || "(ไม่มีรายละเอียด)",
+            date: d.doc_date,
+            // map status อัตโนมัติ
+            status: d.status === "submitted" ? "pending" : "done",
+            word: d.word_file,
+            pdf: d.pdf_file
+        }));
+
+        renderList();
+    }
+
+
+    loadRequests();
+
 
     let currentPage = 1;
     let itemsPerPage = 10;
@@ -223,51 +193,53 @@ if (!isset($_SESSION['user_id'])) {
     function renderList() {
         const dataFiltered = dataAll.filter((d) => d.status === activeTab);
         const sorted = dataFiltered.sort((a, b) =>
-            sortAsc ?
-            new Date(a.date) - new Date(b.date) :
-            new Date(b.date) - new Date(a.date)
+            sortAsc ? new Date(a.date) - new Date(b.date) : new Date(b.date) - new Date(a.date)
         );
 
         const start = (currentPage - 1) * itemsPerPage;
         const shown = sorted.slice(start, start + itemsPerPage);
 
-        requestList.innerHTML = shown
-            .map(
-                (req) => `
-        <div class="bg-gray-50 p-4 rounded-xl shadow flex justify-between items-start">
-          <div>
-            <div class="font-semibold text-gray-800">${req.title}</div>
-            <div class="text-sm text-gray-500 mt-1">${detail}</div>
-          </div>
-          <div class="text-right text-sm text-gray-600">
-            <div>${formatDate(req.date)}</div>
-            <div class="mt-2 flex justify-end space-x-2">
-             <a href="#" class="text-blue-500 flex items-center space-x-1"><img src="https://cdn-icons-png.flaticon.com/16/281/281760.png" alt="Word"> <span>Word</span></a>
-            <a href="#" class="text-red-500 flex items-center space-x-1"><img src="https://cdn-icons-png.flaticon.com/16/337/337946.png" alt="PDF"> <span>PDF</span></a>
-          </div>
-            </div>
-          </div>
-        </div>`
-            )
-            .join("");
+        requestList.innerHTML = shown.map(req => `
+    <div class="bg-gray-50 p-4 rounded-xl shadow flex justify-between items-start">
+      <div>
+        <!-- 🟢 ชื่อเอกสารเป็นลิงก์ -->
+        <a href="edit_document.php?id=${req.document_id}" 
+           class="font-semibold text-teal-600 hover:underline">
+           ${req.title}
+        </a>
+        <!-- รายละเอียดหรือสถานะ -->
+        <div class="text-sm text-gray-500 mt-1">
+          ${req.detail ? req.detail : "(ไม่มีรายละเอียด)"} | สถานะ: ${req.status}
+        </div>
+      </div>
+      <div class="text-right text-sm text-gray-600">
+        <!-- วันที่ -->
+        <div>${formatDate(req.date)}</div>
+        <!-- ไอคอน Word / PDF -->
+        <div class="mt-2 flex justify-end space-x-2">
+          <span class="text-blue-500 flex items-center space-x-1">
+            <img src="https://cdn-icons-png.flaticon.com/16/281/281760.png" alt="Word"> <span>Word</span>
+          </span>
+          <span class="text-red-500 flex items-center space-x-1">
+            <img src="https://cdn-icons-png.flaticon.com/16/337/337946.png" alt="PDF"> <span>PDF</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  `).join("");
 
         const totalPages = Math.ceil(dataFiltered.length / itemsPerPage);
         pagination.innerHTML = Array.from({
-                    length: totalPages
-                },
-                (_, i) => i + 1
-            )
-            .map(
-                (i) => `
-        <button onclick="goToPage(${i})" class="px-3 py-1 rounded border ${
-              i === currentPage
-                ? "bg-teal-500 text-white"
-                : "text-teal-500 border-teal-500"
-            }">${i}</button>
-      `
-            )
-            .join("");
+                length: totalPages
+            }, (_, i) => i + 1)
+            .map(i => `
+      <button onclick="goToPage(${i})" class="px-3 py-1 rounded border ${
+        i === currentPage ? "bg-teal-500 text-white" : "text-teal-500 border-teal-500"
+      }">${i}</button>
+    `).join("");
     }
+
+
 
     function goToPage(page) {
         currentPage = page;

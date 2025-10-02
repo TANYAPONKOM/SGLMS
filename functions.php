@@ -16,7 +16,6 @@ function getPDO() {
     }
     return $pdo;
 }
-
 function login(string $username, string $password): array {
     $pdo = getPDO();
 
@@ -40,7 +39,7 @@ function login(string $username, string $password): array {
     }
 
     $stored = (string)$user['password'];
-    $passOK = preg_match('/^\$2[aby]\$|^\$argon2/i', $stored)
+    $passOK = preg_match('/^$2[aby]$|^$argon2/i', $stored)
               ? password_verify($password, $stored)
               : hash_equals($stored, $password);
 
