@@ -1,8 +1,8 @@
 <?php
 session_start();
 if (!isset($_SESSION['role_id']) || $_SESSION['role_id'] != 1) {
-  header('Location: ../login.html');
-  exit;
+    header('Location: ../login.html');
+    exit;
 }
 
 require_once __DIR__ . '/../functions.php';
@@ -43,33 +43,21 @@ $fields = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="text-[13px] mt-[0px]">Letter Management System</div>
       </div>
     </div>
-
-
     <div class="flex items-center space-x-4">
-      <!-- เมนู หน้าหลัก -->
       <a href="home.php">
-        <div
-          class="px-4 py-2 rounded-[11px] font-bold transition 
-      <?= $current === 'home.php' ? 'bg-white text-teal-500 shadow' : 'text-white hover:bg-white hover:text-teal-500' ?>">
+        <div class="px-4 py-2 rounded-[11px] font-bold transition  text-white hover:bg-white hover:text-teal-500">
           หน้าหลัก
         </div>
       </a>
-
-      <!-- เมนู กำหนดสิทธิ์ -->
       <a href="user_Managerment.php" id="tab-users">
-        <div
-          class="px-4 py-2 rounded-[11px] font-bold transition 
-      <?= $current === 'user_Managerment.php' ? 'bg-white text-teal-500 shadow' : 'text-white hover:bg-white hover:text-teal-500' ?>">
+        <div class="px-4 py-2 rounded-[11px] font-bold transition text-white hover:bg-white hover:text-teal-500">
           กำหนดสิทธิ์
         </div>
       </a>
-
       <!-- Dropdown จัดการเทมเพลต -->
       <div class="relative">
-        <button id="templateBtn" class="px-4 py-2 rounded-[11px] font-bold transition flex items-center space-x-1
-      <?= ($current === 'form_Templates.php' || $current === 'department_Management.php') 
-          ? 'bg-white text-teal-500 shadow' 
-          : 'text-white hover:bg-white hover:text-teal-500' ?>">
+        <button id="templateBtn"
+          class="px-4 py-2 rounded-[11px] font-bold transition bg-white text-teal-500 shadow flex items-center space-x-1">
           <span>จัดการเทมเพลต</span>
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -78,20 +66,10 @@ $fields = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         <!-- เมนูย่อย -->
         <div id="templateMenu" class="hidden absolute bg-white text-gray-700 mt-1 rounded-lg shadow-lg w-48 z-50">
-          <a href="form_Templates.php"
-            class="block px-4 py-2 hover:bg-teal-100 <?= $current === 'form_Templates.php' ? 'bg-teal-100 font-bold' : '' ?>">
-            การจัดการเทมเพลต
-          </a>
-          <a href="department_Managerment.php"
-            class="block px-4 py-2 hover:bg-teal-100 <?= $current === 'department_Managerment.php' ? 'bg-teal-100 font-bold' : '' ?>">
-            การจัดการภาควิชา
-          </a>
+          <a href="form_Templates.php" class="block px-4 py-2 hover:bg-teal-100">การจัดการเทมเพลต</a>
+          <a href="department_Managerment.php" class="block px-4 py-2 hover:bg-teal-100">การจัดการภาควิชา</a>
         </div>
       </div>
-
-
-
-
 
       <div class="relative">
         <button id="profileBtn"
@@ -146,7 +124,7 @@ $fields = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <!-- Field Key (แทน Avatar ด้วยตัวอักษรแรก) -->
           <td class="px-4 py-3 flex items-center space-x-3">
             <div class="w-8 h-8 rounded-full bg-teal-500 text-white flex items-center justify-center font-bold">
-              <?= strtoupper(mb_substr($row['field_key'], 0, 1)) ?>
+              <?= strtoupper(mb_substr($row['field_key'],0,1)) ?>
             </div>
             <span class="font-medium text-gray-800"><?= htmlspecialchars($row['field_key']) ?></span>
           </td>
