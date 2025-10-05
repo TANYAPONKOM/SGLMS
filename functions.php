@@ -19,13 +19,22 @@ function getPDO() {
 function login(string $username, string $password): array {
     $pdo = getPDO();
 
-    $sql = "SELECT u.user_id, u.username, u.password, u.role_id, 
-                   u.position, u.fullname, u.is_active,
-                   r.role_name
+    $sql = "SELECT 
+                u.user_id, 
+                u.username, 
+                u.password, 
+                u.role_id, 
+                u.position, 
+                u.fullname, 
+                u.is_active,
+                r.role_name,
+                up.perm_id          -- ✅ ดึง perm_id จาก user_permissions
             FROM users u
             LEFT JOIN roles r ON u.role_id = r.role_id
+            LEFT JOIN user_permissions up ON up.user_id = u.user_id  -- ✅ join เพิ่มตรงนี้
             WHERE u.username = :u 
             LIMIT 1";
+    
     $stmt = $pdo->prepare($sql);
     $stmt->execute(['u' => $username]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -54,9 +63,11 @@ function login(string $username, string $password): array {
         'role_id'   => $user['role_id'],
         'position'  => $user['position'],
         'fullname'  => $user['fullname'],
-        'role_name' => $user['role_name'] ?? ''   // 🔹 กัน error
+        'role_name' => $user['role_name'] ?? '',
+        'perm_id'   => (int)$user['perm_id']   // ✅ เพิ่มบรรทัดนี้
     ];
 }
+
 
 function getAllUsers() {
     $pdo = getPDO();
