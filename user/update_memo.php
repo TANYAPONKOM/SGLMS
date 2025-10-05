@@ -74,12 +74,27 @@ $docDateDisp = trim($_POST['doc_date_display'] ?? '');
   if (!$noCost && !is_numeric($amountRaw)) $errors['amount'] = 'number';
   if ($carUsed && $carPlate === '') $errors['car_plate'] = 'required';
 
+
+
+  // ตรวจขั้นต่ำ
   if (!empty($errors)) {
     header('Location: edit_document.php?id=' . $documentId . '&err=validate');
     exit;
   }
 
+  // 🟢 ตรวจสอบสถานะเอกสารก่อนเริ่ม transaction
+  $stmtStatus = $pdo->prepare("SELECT status FROM documents WHERE document_id = :id");
+  $stmtStatus->execute([':id' => $documentId]);
+  $currentStatus = $stmtStatus->fetchColumn();
+
+  // ถ้าเอกสารเดิมเป็น “รอการแก้ไข” (rejected) → เปลี่ยนกลับเป็น “รอตรวจสอบ” (submitted)
+  if ($currentStatus === 'rejected') {
+    $pdo->prepare("UPDATE documents SET status = 'submitted', updated_at = NOW() WHERE document_id = :id")
+        ->execute([':id' => $documentId]);
+  }
+
   $pdo->beginTransaction();
+
 
   // อัปเดตหัวเอกสาร
   $joinType = match ($purpose) {
