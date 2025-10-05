@@ -46,6 +46,9 @@ $_SESSION['role_id']   = $res['role_id'];
 $_SESSION['fullname']  = $res['fullname'];   // ✅ ชื่อเต็ม
 $_SESSION['position']  = $res['position'];   // ✅ ตำแหน่ง
 $_SESSION['role_name'] = $res['role_name']; 
+$_SESSION['perm_id'] = $res['perm_id'];
+
+
 
 // Redirect ตาม role_id
 switch ((int)$res['role_id']) {

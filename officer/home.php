@@ -63,11 +63,7 @@ if (!isset($_SESSION['user_id'])) {
           หน้าหลัก
         </div>
       </a>
-      <a href="form_Memo.html">
-        <div class="px-4 py-2 rounded-[11px] font-bold transition text-white">
-          แบบฟอร์มบันทึกข้อความ
-        </div>
-      </a>
+
       <div class="relative">
         <!-- ปุ่มโปรไฟล์ -->
         <button id="profileBtn"

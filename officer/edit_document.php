@@ -21,7 +21,7 @@ function thai_date($ymd)
   if (!$ymd || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $ymd))
     return '';
 
-  [$y, $m, $d] = explode('-', $ymd);   
+  [$y, $m, $d] = explode('-', $ymd);
   $m = (int) $m;
   $d = (int) $d;
   $y = (int) $y + 543;
@@ -416,44 +416,6 @@ $len = max(20, $len);
 </head>
 
 <body>
-  <!-- <header class="bg-teal-500 text-white p-4 flex justify-between items-center shadow-md"
-    style="font-family: Arial, Helvetica, sans-serif;">
-    <div class="flex items-center space-x-3">
-      <div class="w-[56px] h-[56px] flex items-center justify-center relative overflow-visible">
-        <svg xmlns="http://www.w3.org/2000/svg" class="absolute scale-[1.4] text-white"
-          style="width: 60px; height: 60px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
-            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m0 0a2 2 0 00-2-2H5a2 2 0 00-2 2m18 0v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8" />
-        </svg>
-      </div>
-      <div class="leading-tight">
-        <div class="text-[16px] font-bold">Smart</div>
-        <div class="text-[16px] font-bold -mt-[2px]">Government</div>
-        <div class="text-[13px] mt-[0px]">Letter Management System</div>
-      </div>
-    </div>
-    <div class="flex items-center space-x-4">
-      <a href="home.html">
-        <div class="px-4 py-2 rounded-[11px] font-bold transition bg-white text-teal-500 shadow">หน้าหลัก</div>
-      </a>
-      <a href="form_Memo.html">
-        <div class="px-4 py-2 rounded-[11px] font-bold transition text-white">แบบฟอร์มบันทึกข้อความ</div>
-      </a>
-      <div class="bg-white text-teal-500 px-4 py-2 rounded-[11px] shadow flex items-center space-x-2">
-        <div class="text-right leading-tight">
-          <div class="font-bold text-[14px]">ดร.พิทย์พิมล ชูรอด</div>
-          <div class="text-[12px]">อาจารย์</div>
-        </div>
-        <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-            stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M5.121 17.804A13.937 13.937 0 0112 15c2.33 0 4.487.577 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-        </div>
-      </div>
-    </div>
-  </header> -->
 
   <?php if (isset($_GET['saved']) && $_GET['saved'] == '1'): ?>
   <div id="alertBox" class="bg-green-500 text-white px-4 py-2 rounded-md text-center mb-4 shadow-md">
@@ -468,17 +430,17 @@ $len = max(20, $len);
     ⚠️ เกิดข้อผิดพลาดในระบบ กรุณาลองใหม่อีกครั้ง
   </div>
   <?php endif; ?>
+  <!-- <?php
+  echo '<pre style="background:#eee;padding:8px;border:1px solid #ccc;">';
+  print_r($_SESSION);
+  echo '</pre>';
+  ?> -->
 
   <main class="page">
     <form id="updateForm" action="update_memo.php" method="post">
-
-
       <!-- hidden input ครบทุก field_id -->
-
       <input type="hidden" name="document_id" value="<?= h($document['document_id']) ?>">
       <input type="hidden" name="template_id" value="<?= h($document['template_id']) ?>">
-
-
 
       <!-- สำคัญ: ให้ doc_date เป็นรูปแบบเดิม (YYYY-MM-DD) ที่ดึงมาจาก DB -->
       <input type="hidden" name="doc_date" id="hidden_doc_date" value="<?= h($docDate) ?>">
@@ -612,34 +574,47 @@ $len = max(20, $len);
       <div class="content-block single align-to-dean" style="margin-top:50px;;"> (ผู้ช่วยศาสตราจารย์ ดร. ขนิษฐา
         นามี)<br /> หัวหน้าภาควิชาเทคโนโลยีสารสนเทศ </div>
       <div class="footer-actions">
-        <!-- พิมพ์ -->
+        <!-- ปุ่มพิมพ์ -->
         <button type="button" onclick="window.print()"
           class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md text-xl font-bold">
           พิมพ์ / ดูตัวอย่าง
         </button>
 
-        <?php if ($roleId == 2): // Officer ?>
+        <?php
+        $status = $document['status'] ?? '';
+        $permId = $_SESSION['perm_id'] ?? 0;
+        ?>
 
-        <!-- ✅ บันทึกการแก้ไข + อนุมัติทันที (submit ไป update_memo.php) -->
-        <button type="submit"
+        <?php if ($roleId == 2): // Officer ?>
+        <?php if ($status !== 'approved'): // ✅ ยังไม่อนุมัติ -> แสดงปุ่ม ?>
+
+        <!-- ✅ ปุ่มยืนยัน -->
+        <button type="submit" id="btnApprove"
           class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-md text-xl font-bold">
           ยืนยัน
         </button>
 
-
-        <button type="button" onclick="updateStatus('rejected')"
+        <!-- ❌ ปุ่มไม่ผ่าน -->
+        <button type="button" id="btnReject"
           class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-md text-xl font-bold">
           ไม่ผ่าน
         </button>
-        <?php else: ?>
 
+
+        <?php else:
+            ?>
+        <div class="text-gray-500 text-lg font-medium italic pr-4">
+        </div>
+        <?php endif; ?>
+
+        <?php else: // User ?>
         <!-- ผู้ใช้ทั่วไป -->
         <button type="submit" class="bg-teal-500 hover:bg-teal-600 text-white px-6 py-2 rounded-md text-xl font-bold">
           ยืนยัน
         </button>
-
         <?php endif; ?>
       </div>
+
 
       <?php if (isset($_GET['saved'])): ?>
       <script>
@@ -711,7 +686,7 @@ $len = max(20, $len);
   });
 
   function updateStatus(status) {
-    const docId = <?= (int)$document['document_id'] ?>;
+    const docId = <?= (int) $document['document_id'] ?>;
 
     fetch('update_status.php', {
         method: 'POST',
@@ -785,6 +760,44 @@ $len = max(20, $len);
     // กำหนดความกว้างกล่อง = ความกว้างบรรทัดชื่อ -> ตำแหน่งจะกึ่งกลางใต้ชื่อพอดี
     box.style.width = nameEl.offsetWidth + 'px';
   })();
+  // ✅ ตรวจสิทธิ์ Officer ก่อนอนุมัติ / ไม่ผ่าน
+  document.addEventListener("DOMContentLoaded", () => {
+    const permId = <?= (int) ($_SESSION['perm_id'] ?? 0) ?>;
+    const btnApprove = document.getElementById('btnApprove');
+    const btnReject = document.getElementById('btnReject');
+
+    function showNoPermissionAlert() {
+      Swal.fire({
+        icon: 'error',
+        title: 'ไม่มีสิทธิ์ในการแก้ไขเอกสาร',
+        html: 'คุณไม่มีสิทธิ์ในการอนุมัติหรือไม่ผ่านเอกสารนี้<br><b>กรุณาติดต่อผู้ดูแลระบบ (Admin)</b>',
+        confirmButtonText: 'ตกลง',
+        confirmButtonColor: '#d33'
+      });
+    }
+
+    if (btnApprove) {
+      btnApprove.addEventListener('click', (e) => {
+        if (permId !== 1) {
+          e.preventDefault();
+          showNoPermissionAlert();
+        }
+      });
+    }
+
+    if (btnReject) {
+      btnReject.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (permId !== 1) {
+          showNoPermissionAlert();
+          return;
+        }
+        // ✅ มีสิทธิ์ถึงจะอัปเดตสถานะ
+        updateStatus('rejected');
+      });
+    }
+
+  });
   </script>
 </body>
 
