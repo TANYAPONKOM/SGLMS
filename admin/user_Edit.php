@@ -12,6 +12,12 @@ $id = $_GET['id'] ?? 0;
 $stmt = $pdo->prepare("SELECT * FROM users WHERE user_id=?");
 $stmt->execute([$id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// ดึงสิทธิ์ทั้งหมดที่ user_id นี้มี
+$permStmt = $pdo->prepare("SELECT perm_id FROM user_permissions WHERE user_id=?");
+$permStmt->execute([$id]);
+$userPerms = $permStmt->fetchAll(PDO::FETCH_COLUMN); // จะได้ array เช่น [1, 2]
+
 if (!$user) { die("ไม่พบข้อมูลผู้ใช้"); }
 ?>
 <!DOCTYPE html>
@@ -203,6 +209,31 @@ if (!$user) { die("ไม่พบข้อมูลผู้ใช้"); }
                         class="w-full pl-10 pr-3 py-2 border rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-teal-400">
                         <option value="1" <?= $user['department_id']==1?'selected':'' ?>>เทคโนโลยีสารสนเทศ</option>
                     </select>
+                </div>
+            </div>
+
+            <!-- Permissions -->
+            <div class="mb-6">
+                <label class="block font-semibold text-gray-700 mb-2">สิทธิ์ในการเข้าถึง</label>
+                <div class="flex space-x-6">
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" name="permissions[]" value="1"
+                            class="w-5 h-5 text-teal-600 border-2 border-teal-500 rounded focus:ring-teal-400"
+                            <?= in_array(1, $userPerms) ? 'checked' : '' ?>>
+                        <span>แก้ไขได้</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" name="permissions[]" value="2"
+                            class="w-5 h-5 text-teal-600 border-2 border-teal-500 rounded focus:ring-teal-400"
+                            <?= in_array(2, $userPerms) ? 'checked' : '' ?>>
+                        <span>ดูได้</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" name="permissions[]" value="3"
+                            class="w-5 h-5 text-teal-600 border-2 border-teal-500 rounded focus:ring-teal-400"
+                            <?= in_array(3, $userPerms) ? 'checked' : '' ?>>
+                        <span>กำหนดสิทธิ์ได้</span>
+                    </label>
                 </div>
             </div>
 
