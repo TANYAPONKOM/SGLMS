@@ -60,7 +60,7 @@ if (!isset($_SESSION['user_id'])) {
             </div>
         </div>
         <div class="flex items-center space-x-4">
-            <a href="home.html">
+            <a href="home.php">
                 <div class="px-4 py-2 rounded-[11px] font-bold transition bg-white text-teal-500 shadow">หน้าหลัก</div>
             </a>
             <a href="form_Memo.html">
