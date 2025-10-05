@@ -256,6 +256,7 @@ if (!isset($_SESSION['user_id'])) {
     tabPending.classList.add("bg-teal-500", "text-white");
     tabDone.classList.remove("bg-teal-500", "text-white");
     tabEdit.classList.remove("bg-teal-500", "text-white");
+    currentPage = 1;
   };
   tabDone.onclick = () => {
     activeTab = "done";
@@ -263,6 +264,7 @@ if (!isset($_SESSION['user_id'])) {
     tabDone.classList.add("bg-teal-500", "text-white");
     tabPending.classList.remove("bg-teal-500", "text-white");
     tabEdit.classList.remove("bg-teal-500", "text-white");
+    currentPage = 1;
   };
   tabEdit.onclick = () => {
     activeTab = "edit";
@@ -270,6 +272,7 @@ if (!isset($_SESSION['user_id'])) {
     tabEdit.classList.add("bg-teal-500", "text-white");
     tabPending.classList.remove("bg-teal-500", "text-white");
     tabDone.classList.remove("bg-teal-500", "text-white");
+    currentPage = 1;
   };
 
   loadRequests();
